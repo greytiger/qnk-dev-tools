@@ -332,7 +332,7 @@ body {
         height: auto;
         position: sticky;
         top: 16px;
-        z-index: 50;
+        z-index: 1001;
         flex-direction: row;
         align-items: center;
         padding: 12px 20px;
