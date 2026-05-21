@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Boot Dev Suite - Tiện ích Lập trình viên Java</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 24 24">
+                        <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/>
+                        <polyline points="2 8.5 12 15 22 8.5"/>
+                        <line x1="12" y1="15" x2="12" y2="22"/>
+                    </svg>
+                </div>
+                <div class="brand-info">
+                    <h1>Spring Suite</h1>
+                    <span>Developer Sandbox</span>
+                </div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item active" data-tab="config-tab">
+                    <button>
+                        <svg viewBox="0 0 24 24"><path d="M4 17L10 11L4 5M12 19H20"/></svg>
+                        Yaml ↔ Properties
+                    </button>
+                </li>
+                <li class="nav-item" data-tab="pojo-tab">
+                    <button>
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+                        JSON to Java POJO
+                    </button>
+                </li>
+                <li class="nav-item" data-tab="jvm-tab">
+                    <button>
+                        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                        JVM Heap Calculator
+                    </button>
+                </li>
+                <li class="nav-item" data-tab="cron-tab">
+                    <button>
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        Scheduled Cron Maker
+                    </button>
+                </li>
+                <li class="nav-item" data-tab="codec-tab">
+                    <button>
+                        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        JWT & Encryption Tools
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                Spring Boot Dev Tool Suite v1.0<br>
+                Chạy hoàn toàn cục bộ 💻<br>
+                <span>Tạo bởi <a href="https://github.com" target="_blank">GreyTiger</a></span>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="workspace">
+            
+            <!-- SECTION 1: YAML ↔ Properties -->
+            <div id="config-tab" class="tab-panel active">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg viewBox="0 0 24 24"><path d="M4 17L10 11L4 5M12 19H20"/></svg>
+                            <div>
+                               <h2>Chuyển đổi Properties ↔ YAML</h2>
+                               <div class="panel-description">Chuyển đổi qua lại giữa hai kiểu cấu hình phổ biến của Spring Boot. Hỗ trợ thuộc tính lồng nhau.</div>
+                            </div>
+                        </div>
+                        <div class="controls-bar">
+                            <button class="btn btn-primary" onclick="convertPropertiesToYaml()">
+                                Properties → YAML
+                            </button>
+                            <button class="btn btn-secondary" onclick="convertYamlToProperties()">
+                                YAML → Properties
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid-2col">
+                        <div class="editor-container">
+                            <div class="editor-label">
+                                <span>Application.properties</span>
+                                <button class="btn-copy" onclick="copyText('prop-input')" title="Copy">
+                                    <svg viewBox="0 0 24 24" id="icon-copy-prop-input"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                </button>
+                            </div>
+                            <div class="editor-wrapper">
+                                <textarea id="prop-input" placeholder="spring.datasource.url=jdbc:mysql://localhost:3306/db&#10;spring.datasource.username=root&#10;spring.datasource.password=123456&#10;server.port=8080"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="editor-container">
+                            <div class="editor-label">
+                                <span>Application.yml</span>
+                                <button class="btn-copy" onclick="copyText('yaml-input')" title="Copy">
+                                    <svg viewBox="0 0 24 24" id="icon-copy-yaml-input"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                </button>
+                            </div>
+                            <div class="editor-wrapper">
+                                <textarea id="yaml-input" placeholder="spring:&#10;  datasource:&#10;    url: jdbc:mysql://localhost:3306/db&#10;    username: root&#10;    password: 123456&#10;server:&#10;  port: 8080"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SECTION 2: JSON to Java POJO -->
+            <div id="pojo-tab" class="tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/></svg>
+                            <div>
+                               <h2>Trình tạo Java POJO từ JSON</h2>
+                               <div class="panel-description">Sinh tự động mã nguồn các Class Java tương ứng từ cấu hình payload JSON đầu vào.</div>
+                            </div>
+                        </div>
+                        <div class="controls-bar">
+                            <div class="util-input-group" style="flex-direction: row; align-items: center; gap: 8px;">
+                                <label style="margin: 0; color: var(--text-muted); font-size: 13px;">Class chính:</label>
+                                <input type="text" id="pojo-class-name" value="UserResponse" style="width: 140px; padding: 7px 12px; background: rgba(15,23,42,0.6); border: 1px solid var(--panel-border); border-radius: 8px; color: white;">
+                            </div>
+                            <div class="select-wrapper">
+                                <select id="pojo-style" onchange="generateJavaPojos()">
+                                    <option value="lombok">Lombok Class (@Data)</option>
+                                    <option value="record">Java 16+ Record</option>
+                                    <option value="standard">Standard Class (Getter/Setter)</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="generateJavaPojos()">Sinh mã Java</button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid-2col">
+                        <div class="editor-container">
+                            <div class="editor-label">
+                                <span>Dữ liệu JSON mẫu</span>
+                                <button class="btn-copy" onclick="copyText('json-input')" title="Copy">
+                                    <svg viewBox="0 0 24 24" id="icon-copy-json-input"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                </button>
+                            </div>
+                            <div class="editor-wrapper">
+                                <textarea id="json-input" placeholder='{&#10;  "id": 1,&#10;  "username": "hoangnam",&#10;  "active": true,&#10;  "role_level": 3,&#10;  "profile": {&#10;    "first_name": "Nam",&#10;    "last_name": "Hoang"&#10;  },&#10;  "tags": ["java", "spring"]&#10;}'></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="editor-container">
+                            <div class="editor-label">
+                                <span>Kết quả mã nguồn Java</span>
+                                <button class="btn-copy" onclick="copyText('pojo-output')" title="Copy">
+                                    <svg viewBox="0 0 24 24" id="icon-copy-pojo-output"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                </button>
+                            </div>
+                            <div class="editor-wrapper">
+                                <textarea id="pojo-output" readonly placeholder="Mã Java được sinh tự động sẽ hiển thị tại đây..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SECTION 3: JVM Calculator -->
+            <div id="jvm-tab" class="tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/></svg>
+                            <div>
+                               <h2>Bộ tính toán tài nguyên RAM JVM tối ưu</h2>
+                               <div class="panel-description">Thiết lập cấu hình phân bổ Heap Size (`-Xmx`) và cờ GC để tránh container bị dừng đột ngột (OOMKilled) trong Kubernetes/Docker.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="calculator-form">
+                        <div class="form-group">
+                            <label for="jvm-ram-input">Giới hạn RAM của Container</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="jvm-ram-input" value="1024" oninput="runJvmCalculator()">
+                                <span class="input-badge">MB</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="jvm-profile">Kiểu tải / Loại ứng dụng</label>
+                            <div class="select-wrapper">
+                                <select id="jvm-profile" onchange="runJvmCalculator()">
+                                    <option value="microservice">Microservice (Tải nhẹ, phản hồi nhanh)</option>
+                                    <option value="standard" selected>Standard Web API (Ứng dụng kết nối DB/Cache)</option>
+                                    <option value="batch">Batch Processing (Xử lý tác vụ tính toán nặng)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="calc-metrics">
+                        <div class="metric-card">
+                            <h3>Khuyến nghị Heap Size (Max Heap)</h3>
+                            <p id="metric-heap">716 MB</p>
+                            <span id="metric-heap-percent">70% của RAM Container</span>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Max Metaspace Size</h3>
+                            <p id="metric-metaspace">153 MB</p>
+                            <span>Giới hạn bộ nhớ nạp class</span>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Bộ nhớ trống an toàn (Off-heap)</h3>
+                            <p id="metric-offheap">155 MB</p>
+                            <span>Dành cho luồng, native libs, GC overheads</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-alert">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        <div>
+                            <p><strong>Lưu ý an toàn:</strong> Không bao giờ thiết lập `-Xmx` bằng 100% tài nguyên RAM của Container. JVM luôn tiêu thụ bộ nhớ ngoài heap (như Metaspace, Off-heap, bộ nhớ Thread Stack). Việc để trống một lượng RAM an toàn giúp bảo vệ tiến trình Java khỏi việc bị Linux Kernel gửi tín hiệu KILL (Out Of Memory Killer).</p>
+                        </div>
+                    </div>
+                    
+                    <div class="editor-container">
+                        <div class="editor-label">
+                            <span>Khuyến nghị tham số JVM khởi động (Arguments)</span>
+                            <button class="btn-copy" onclick="copyText('jvm-output')" title="Copy">
+                                <svg viewBox="0 0 24 24" id="icon-copy-jvm-output"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            </button>
+                        </div>
+                        <div class="editor-wrapper">
+                            <textarea id="jvm-output" readonly style="height: 320px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SECTION 4: Cron Expression Maker -->
+            <div id="cron-tab" class="tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <div>
+                               <h2>Trình khởi tạo Spring Cron `@Scheduled`</h2>
+                               <div class="panel-description">Dễ dàng tạo và giải nghĩa các chu kỳ biểu thức Cron cho tác vụ nền Spring Boot Scheduled.</div>
+                            </div>
+                        </div>
+                        <div class="controls-bar">
+                            <div class="select-wrapper">
+                                <select id="cron-presets" onchange="applyCronPreset()">
+                                    <option value="">-- Chọn Preset thông dụng --</option>
+                                    <option value="0 * * * * *">Mỗi phút một lần</option>
+                                    <option value="0 0 * * * *">Mỗi giờ một lần (đầu giờ)</option>
+                                    <option value="0 0 8 * * *">Vào lúc 8h00 sáng mỗi ngày</option>
+                                    <option value="0 0 0 * * *">Vào lúc 0h00 đêm mỗi ngày (Giữa đêm)</option>
+                                    <option value="0 0 12 * * MON-FRI">Vào 12h00 trưa từ thứ 2 tới thứ 6 hàng tuần</option>
+                                    <option value="0 0/15 8-18 * * *">Mỗi 15 phút, từ 8h tới 18h hàng ngày</option>
+                                    <option value="0 0 1 1 * *">Vào 1h00 sáng ngày mùng 1 hàng tháng</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cron-configurator">
+                        <div class="cron-input-group">
+                            <label>Giây (Second)</label>
+                            <input type="text" id="cron-sec" value="0" oninput="updateCronFromInputs()">
+                        </div>
+                        <div class="cron-input-group">
+                            <label>Phút (Minute)</label>
+                            <input type="text" id="cron-min" value="0" oninput="updateCronFromInputs()">
+                        </div>
+                        <div class="cron-input-group">
+                            <label>Giờ (Hour)</label>
+                            <input type="text" id="cron-hour" value="8" oninput="updateCronFromInputs()">
+                        </div>
+                        <div class="cron-input-group">
+                            <label>Ngày Tháng (Day of Month)</label>
+                            <input type="text" id="cron-dom" value="*" oninput="updateCronFromInputs()">
+                        </div>
+                        <div class="cron-input-group">
+                            <label>Tháng (Month)</label>
+                            <input type="text" id="cron-month" value="*" oninput="updateCronFromInputs()">
+                        </div>
+                        <div class="cron-input-group">
+                            <label>Thứ (Day of Week)</label>
+                            <input type="text" id="cron-dow" value="?" oninput="updateCronFromInputs()">
+                        </div>
+                    </div>
+                    
+                    <div class="cron-result-panel">
+                        <div class="cron-expression-display">
+                            <span id="cron-result-string">0 0 8 * * ?</span>
+                            <button class="btn-copy" onclick="copyText('cron-result-string', true)" style="position: static; margin-left: 12px;" title="Copy">
+                                <svg viewBox="0 0 24 24" id="icon-copy-cron-result-string"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            </button>
+                        </div>
+                        <div class="cron-explanation">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span id="cron-result-explanation">Chạy định kỳ vào lúc 08:00:00 sáng mỗi ngày.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="editor-container" style="margin-top: 24px;">
+                        <div class="editor-label">Ví dụ nhúng mã nguồn trong Spring Boot Java</div>
+                        <div class="editor-wrapper" style="border-radius: 12px; background: rgba(15,23,42,0.8); padding: 16px; font-family: var(--font-mono); font-size: 13px; color: #a5b4fc; line-height: 1.6; border: 1px solid var(--panel-border)">
+                            <span style="color: var(--text-dark)">// Khai báo tác vụ lên lịch tự động</span><br>
+                            <span style="color: #ec4899">@Scheduled</span>(cron = <span style="color: #10b981">"<span id="cron-code-annotation">0 0 8 * * ?</span>"</span>)<br>
+                            <span style="color: #3b82f6">public void</span> <span style="color: #f59e0b">executeScheduledTask</span>() {<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;log.info(<span style="color: #10b981">"Tác vụ tự động đang chạy..."</span>);<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--text-dark)">// Triển khai logic nghiệp vụ tại đây</span><br>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SECTION 5: JWT & Base64 Codes -->
+            <div id="codec-tab" class="tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <div>
+                               <h2>Hộp công cụ Giải mã & Mã hóa Developer</h2>
+                               <div class="panel-description">Bao gồm công cụ giải mã JWT Token cục bộ, mã hóa Base64 và URL mã hóa an toàn offline.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="utils-grid">
+                        
+                        <!-- Utility Card: JWT Decoder -->
+                        <div class="util-card" style="grid-column: span 2;">
+                            <h3>
+                                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                Trình giải mã JWT Token (100% Client-side Offline)
+                            </h3>
+                            
+                            <div class="jwt-layout">
+                                <div class="editor-container">
+                                    <div class="editor-label">Nhập Token JWT</div>
+                                    <div class="editor-wrapper">
+                                        <textarea id="jwt-input" oninput="decodeJwt()" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ..." style="height: 360px;"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="jwt-outputs">
+                                    <div class="jwt-block">
+                                        <h3 class="jwt-header-title">HEADER (Thuật toán & Kiểu)</h3>
+                                        <pre id="jwt-header-out">{}</pre>
+                                    </div>
+                                    
+                                    <div class="jwt-block">
+                                        <h3 class="jwt-payload-title">PAYLOAD (Dữ liệu người dùng)</h3>
+                                        <pre id="jwt-payload-out">{}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Utility Card: Base64 UTF-8 -->
+                        <div class="util-card">
+                            <h3>
+                                <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                Base64 Converter (Hỗ trợ UTF-8 Tiếng Việt)
+                            </h3>
+                            <div class="util-input-group">
+                                <label>Văn bản thô (Plain Text)</label>
+                                <input type="text" id="base64-plain" placeholder="Ví dụ: Spring Boot Việt Nam" oninput="runBase64Encode()">
+                            </div>
+                            <div class="util-input-group">
+                                <label>Chuỗi Base64 Encoded</label>
+                                <input type="text" id="base64-encoded" placeholder="U3ByaW5nIEJvb3QgVmnhu4d0IE5hbQ==" oninput="runBase64Decode()">
+                            </div>
+                        </div>
+                        
+                        <!-- Utility Card: Basic Authorization Header -->
+                        <div class="util-card">
+                            <h3>
+                                <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                                Tạo Basic Authentication Header
+                            </h3>
+                            <div class="util-input-group">
+                                <label>Username (Tài khoản)</label>
+                                <input type="text" id="basic-user" value="admin" oninput="runBasicAuthBuilder()">
+                            </div>
+                            <div class="util-input-group">
+                                <label>Password (Mật khẩu)</label>
+                                <input type="password" id="basic-pass" value="password123" oninput="runBasicAuthBuilder()">
+                            </div>
+                            <div class="util-input-group" style="position: relative;">
+                                <label>HTTP Header Output</label>
+                                <input type="text" id="basic-header-out" readonly style="font-family: var(--font-mono); font-size: 11.5px; padding-right: 36px;">
+                                <button class="btn-copy" onclick="copyText('basic-header-out')" style="top: 22px; width: 28px; height: 28px;">
+                                    <svg viewBox="0 0 24 24" id="icon-copy-basic-header-out"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- Core Business Logic Script -->
+    <script src="app.js"></script>
+</body>
+</html>
