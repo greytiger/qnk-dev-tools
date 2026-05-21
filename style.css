@@ -302,12 +302,69 @@ body {
     }
     .app-container {
         flex-direction: column;
+        padding: 16px;
+        gap: 20px;
     }
     .sidebar {
         width: 100%;
         height: auto;
         position: relative;
         top: 0;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 24px;
+        gap: 20px;
+    }
+    .brand {
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    .nav-menu {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        flex: none;
+        overflow-y: visible;
+    }
+    .nav-item button {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+    .nav-item.active button::before {
+        left: 15%;
+        top: auto;
+        bottom: 0;
+        height: 3px;
+        width: 70%;
+        border-radius: 4px 4px 0 0;
+    }
+    .sidebar-footer {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+        gap: 16px;
+    }
+    .brand {
+        justify-content: center;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--panel-border);
+    }
+    .nav-menu {
+        justify-content: center;
+        width: 100%;
+    }
+    .nav-item {
+        flex: 1 1 auto;
+    }
+    .nav-item button {
+        justify-content: center;
     }
 }
 
