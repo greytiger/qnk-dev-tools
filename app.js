@@ -1,6 +1,8 @@
 // Tab Navigation
 const navItems = document.querySelectorAll('.nav-item');
 const tabPanels = document.querySelectorAll('.tab-panel');
+const menuToggleBtn = document.getElementById('menu-toggle-btn');
+const navMenu = document.querySelector('.nav-menu');
 
 navItems.forEach(item => {
     item.addEventListener('click', () => {
@@ -12,8 +14,48 @@ navItems.forEach(item => {
         item.classList.add('active');
         const targetTab = item.getAttribute('data-tab');
         document.getElementById(targetTab).classList.add('active');
+
+        // Collapse menu on mobile after selection
+        if (navMenu && navMenu.classList.contains('expanded')) {
+            navMenu.classList.remove('expanded');
+            if (menuToggleBtn) {
+                menuToggleBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" id="hamburger-icon">
+                        <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                `;
+            }
+        }
     });
 });
+
+// Mobile Menu Toggle
+if (menuToggleBtn && navMenu) {
+    menuToggleBtn.addEventListener('click', () => {
+        const isExpanded = navMenu.classList.toggle('expanded');
+        
+        // Toggle hamburger and close icon
+        if (isExpanded) {
+            menuToggleBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" id="hamburger-icon">
+                    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+            `;
+        } else {
+            menuToggleBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" id="hamburger-icon">
+                    <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+            `;
+        }
+    });
+}
+
 
 // ----------------------------------------------------
 // TOOL 1: Properties ↔ YAML
