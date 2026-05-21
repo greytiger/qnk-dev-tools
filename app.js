@@ -3,6 +3,7 @@ const navItems = document.querySelectorAll('.nav-item');
 const tabPanels = document.querySelectorAll('.tab-panel');
 const menuToggleBtn = document.getElementById('menu-toggle-btn');
 const navMenu = document.querySelector('.nav-menu');
+const sidebarBackdrop = document.getElementById('sidebar-backdrop');
 
 navItems.forEach(item => {
     item.addEventListener('click', () => {
@@ -18,6 +19,9 @@ navItems.forEach(item => {
         // Collapse menu on mobile after selection
         if (navMenu && navMenu.classList.contains('expanded')) {
             navMenu.classList.remove('expanded');
+            if (sidebarBackdrop) {
+                sidebarBackdrop.classList.remove('active');
+            }
             if (menuToggleBtn) {
                 menuToggleBtn.innerHTML = `
                     <svg viewBox="0 0 24 24" id="hamburger-icon">
@@ -35,6 +39,9 @@ navItems.forEach(item => {
 if (menuToggleBtn && navMenu) {
     menuToggleBtn.addEventListener('click', () => {
         const isExpanded = navMenu.classList.toggle('expanded');
+        if (sidebarBackdrop) {
+            sidebarBackdrop.classList.toggle('active', isExpanded);
+        }
         
         // Toggle hamburger and close icon
         if (isExpanded) {
@@ -45,6 +52,23 @@ if (menuToggleBtn && navMenu) {
                 </svg>
             `;
         } else {
+            menuToggleBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" id="hamburger-icon">
+                    <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+            `;
+        }
+    });
+}
+
+// Click backdrop to collapse menu
+if (sidebarBackdrop) {
+    sidebarBackdrop.addEventListener('click', () => {
+        if (navMenu) navMenu.classList.remove('expanded');
+        sidebarBackdrop.classList.remove('active');
+        if (menuToggleBtn) {
             menuToggleBtn.innerHTML = `
                 <svg viewBox="0 0 24 24" id="hamburger-icon">
                     <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
