@@ -833,7 +833,83 @@ function getRelativeTimeString(date) {
     return 'vừa xong';
 }
 
+// ----------------------------------------------------
+// SIDEBAR MENU FILTER
+// ----------------------------------------------------
+// Bản đồ từ khóa thông minh hỗ trợ tìm kiếm nhanh kể cả bằng từ viết tắt hoặc từ đồng nghĩa
+const menuKeywords = {
+    'config-tab': ['yaml', 'properties', 'config', 'application.properties', 'application.yml', 'yml', 'cấu hình', 'chuyển đổi'],
+    'pojo-tab': ['json', 'java', 'pojo', 'class', 'record', 'lombok', 'object', 'model', 'dto', 'entity', 'đối tượng'],
+    'jvm-tab': ['jvm', 'heap', 'ram', 'memory', 'calculator', 'gc', 'parallelgc', 'g1gc', 'kubernetes', 'oom', 'bộ nhớ', 'tính toán'],
+    'cron-tab': ['scheduled', 'cron', 'task', 'timer', 'expression', 'job', 'spring', 'định kỳ', 'lịch trình'],
+    'codec-tab': ['jwt', 'decode', 'base64', 'encrypt', 'authorization', 'basic', 'auth', 'security', 'mã hóa', 'giải mã', 'bảo mật'],
+    'epoch-tab': ['epoch', 'timestamp', 'time', 'date', 'millisecond', 'second', 'hệ thống', 'local', 'utc', 'thời gian', 'mili', 'giây']
+};
+
+function filterSidebarMenu() {
+    const input = document.getElementById('menu-search-input');
+    const clearBtn = document.getElementById('btn-clear-search');
+    if (!input) return;
+    
+    const query = input.value.trim().toLowerCase();
+    
+    // Hiển thị/Ẩn nút xóa nhanh
+    if (clearBtn) {
+        clearBtn.style.display = query ? 'flex' : 'none';
+    }
+    
+    const items = document.querySelectorAll('.nav-menu .nav-item');
+    let visibleCount = 0;
+    
+    items.forEach(item => {
+        const tabId = item.getAttribute('data-tab');
+        const text = item.textContent.toLowerCase();
+        
+        // So khớp từ khóa thông minh (cả tiêu đề hiển thị hoặc danh sách từ khóa đi kèm)
+        const keywords = menuKeywords[tabId] || [];
+        const hasKeywordMatch = keywords.some(kw => kw.includes(query));
+        
+        if (text.includes(query) || hasKeywordMatch) {
+            item.style.display = 'block';
+            visibleCount++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    // Xử lý giao diện khi không tìm thấy kết quả
+    const navMenu = document.querySelector('.nav-menu');
+    let emptyState = document.getElementById('nav-search-empty');
+    
+    if (visibleCount === 0) {
+        if (!emptyState) {
+            emptyState = document.createElement('div');
+            emptyState.id = 'nav-search-empty';
+            emptyState.className = 'search-empty-state';
+            emptyState.innerHTML = `
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                <span>Không tìm thấy công cụ</span>
+            `;
+            navMenu.appendChild(emptyState);
+        }
+    } else {
+        if (emptyState) {
+            emptyState.remove();
+        }
+    }
+}
+
+function clearMenuSearch() {
+    const input = document.getElementById('menu-search-input');
+    if (input) {
+        input.value = '';
+        filterSidebarMenu();
+        input.focus();
+    }
+}
+
 // Khởi chạy đồng hồ thời gian thực và khởi tạo giá trị chuyển đổi
 initLiveClock();
 initEpochInputs();
+
 

@@ -1065,3 +1065,104 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
     opacity: 1;
 }
+
+/* ==================================================== */
+/* Sidebar Search Filter Styling                        */
+/* ==================================================== */
+.sidebar-search {
+    padding: 2px 0;
+    margin-bottom: -8px; /* Tối ưu hóa khoảng cách tới menu điều hướng */
+}
+
+.sidebar-search .search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-search .search-icon {
+    position: absolute;
+    left: 12px;
+    width: 16px;
+    height: 16px;
+    stroke: var(--text-dark);
+    stroke-width: 2.2;
+    fill: none;
+    pointer-events: none;
+    transition: var(--transition-smooth);
+}
+
+.sidebar-search input {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 10px 36px 10px 36px;
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    outline: none;
+    transition: var(--transition-smooth);
+}
+
+.sidebar-search input:focus {
+    border-color: var(--color-primary);
+    background: rgba(15, 23, 42, 0.65);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+}
+
+.sidebar-search input:focus + .search-icon {
+    stroke: var(--color-primary);
+}
+
+.clear-search-btn {
+    position: absolute;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: var(--text-dark);
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: var(--transition-smooth);
+}
+
+.clear-search-btn:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.clear-search-btn svg {
+    width: 12px;
+    height: 12px;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    fill: none;
+}
+
+/* Empty search placeholder styling */
+.search-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 12px;
+    text-align: center;
+    color: var(--text-dark);
+    gap: 8px;
+    font-size: 13px;
+    animation: fadeIn 0.3s ease;
+}
+
+.search-empty-state svg {
+    width: 32px;
+    height: 32px;
+    stroke: var(--text-dark);
+    stroke-width: 1.8;
+    fill: none;
+}
+
