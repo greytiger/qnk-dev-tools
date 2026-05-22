@@ -1105,6 +1105,11 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
     transition: var(--transition-smooth);
 }
 
+.sidebar-search input::placeholder {
+    color: var(--text-dark);
+    opacity: 0.8;
+}
+
 .sidebar-search input:focus {
     border-color: var(--color-primary);
     background: rgba(15, 23, 42, 0.65);
