@@ -169,6 +169,13 @@ body {
     background: rgba(255, 255, 255, 0.03);
 }
 
+.nav-item button:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+}
+
 .nav-item.active button {
     color: white;
     background: rgba(99, 102, 241, 0.12);
@@ -1090,6 +1097,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
     fill: none;
     pointer-events: none;
     transition: var(--transition-smooth);
+    flex-shrink: 0;
 }
 
 .sidebar-search input {
@@ -1129,7 +1137,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
     cursor: pointer;
     width: 18px;
     height: 18px;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
@@ -1169,5 +1177,204 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
     stroke: var(--text-dark);
     stroke-width: 1.8;
     fill: none;
+}
+
+/* ==================================================== */
+/* Helper utilities and Refactored styles               */
+/* ==================================================== */
+.flex-row-center-gap8 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.pojo-class-label {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.pojo-class-input {
+    width: 140px;
+    padding: 7px 12px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    color: white;
+}
+
+#jvm-output {
+    height: 320px;
+}
+
+.cron-expression-display .btn-copy {
+    position: static;
+    margin-left: 12px;
+}
+
+.mt-24 {
+    margin-top: 24px;
+}
+
+.mt-10 {
+    margin-top: 10px;
+}
+
+.cron-code-preview {
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.8);
+    padding: 16px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: #a5b4fc;
+    line-height: 1.6;
+    border: 1px solid var(--panel-border);
+}
+
+.code-comment {
+    color: var(--text-dark);
+}
+
+.code-annotation {
+    color: #ec4899;
+}
+
+.code-string {
+    color: #10b981;
+}
+
+.code-keyword {
+    color: #3b82f6;
+}
+
+.code-method {
+    color: #f59e0b;
+}
+
+.grid-span-2 {
+    grid-column: span 2;
+}
+
+#jwt-input {
+    height: 360px;
+}
+
+.relative {
+    position: relative;
+}
+
+#basic-header-out {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    padding-right: 36px;
+}
+
+.btn-copy-sm {
+    top: 22px;
+    width: 28px;
+    height: 28px;
+}
+
+.live-clock-value-container .btn-copy {
+    position: static;
+    width: 32px;
+    height: 32px;
+}
+
+.btn-svg-sm {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.5;
+    margin-right: 6px;
+}
+
+.icon-14 {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.5;
+}
+
+.icon-18 {
+    width: 18px;
+    height: 18px;
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    fill: none;
+}
+
+#epoch-unit-badge {
+    background: rgba(99, 102, 241, 0.2);
+    color: #818cf8;
+    border: 1px solid rgba(99, 102, 241, 0.4);
+}
+
+.epoch-unit-selector {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    margin: 4px 0;
+}
+
+.epoch-unit-selector label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    text-transform: none;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+#output-relative-time {
+    color: var(--color-secondary);
+    font-weight: 500;
+}
+
+#input-date {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: white;
+    outline: none;
+    font-family: var(--font-sans);
+}
+
+.epoch-presets {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin: 4px 0;
+    flex-wrap: wrap;
+}
+
+.epoch-presets .btn {
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 6px;
+}
+
+.epoch-result-item .btn-copy {
+    position: static;
+    width: 26px;
+    height: 26px;
+}
+
+.btn-copy svg.copied {
+    stroke: var(--color-success) !important;
+}
+
+.clear-search-btn.active {
+    display: flex;
+}
+
+.nav-item.hidden {
+    display: none !important;
 }
 

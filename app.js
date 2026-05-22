@@ -592,11 +592,11 @@ function copyText(elementId, isTextContent = false) {
             const originalPath = copyIcon.innerHTML;
             // Switch to success checkmark SVG path
             copyIcon.innerHTML = `<path class="success-checkmark" d="M20 6L9 17 4 12" />`;
-            copyIcon.style.stroke = 'var(--color-success)';
+            copyIcon.classList.add('copied');
             
             setTimeout(() => {
                 copyIcon.innerHTML = originalPath;
-                copyIcon.style.stroke = 'currentColor';
+                copyIcon.classList.remove('copied');
             }, 2000);
         }
     }).catch(err => {
@@ -634,14 +634,14 @@ function toggleLiveClock() {
     isLiveClockPaused = !isLiveClockPaused;
     if (isLiveClockPaused) {
         btn.innerHTML = `
-            <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; margin-right: 6px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <svg viewBox="0 0 24 24" class="btn-svg-sm"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             Tiếp tục
         `;
         btn.classList.remove('btn-secondary');
         btn.classList.add('btn-primary');
     } else {
         btn.innerHTML = `
-            <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; margin-right: 6px;"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+            <svg viewBox="0 0 24 24" class="btn-svg-sm"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
             Tạm dừng
         `;
         btn.classList.remove('btn-primary');
@@ -855,7 +855,7 @@ function filterSidebarMenu() {
     
     // Hiển thị/Ẩn nút xóa nhanh
     if (clearBtn) {
-        clearBtn.style.display = query ? 'flex' : 'none';
+        clearBtn.classList.toggle('active', !!query);
     }
     
     const items = document.querySelectorAll('.nav-menu .nav-item');
@@ -870,10 +870,10 @@ function filterSidebarMenu() {
         const hasKeywordMatch = keywords.some(kw => kw.includes(query));
         
         if (text.includes(query) || hasKeywordMatch) {
-            item.style.display = 'block';
+            item.classList.remove('hidden');
             visibleCount++;
         } else {
-            item.style.display = 'none';
+            item.classList.add('hidden');
         }
     });
     
@@ -908,8 +908,64 @@ function clearMenuSearch() {
     }
 }
 
+// ----------------------------------------------------
+// KEYBOARD SHORTCUTS FOR FILTER & MENU NAVIGATION
+// ----------------------------------------------------
+function initSidebarKeyboardNavigation() {
+    const searchInput = document.getElementById('menu-search-input');
+    
+    if (searchInput) {
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                clearMenuSearch();
+                e.preventDefault();
+            } else if (e.key === 'ArrowDown') {
+                // Focus vào menu item đầu tiên đang hiển thị
+                const visibleItems = Array.from(document.querySelectorAll('.nav-menu .nav-item')).filter(item => !item.classList.contains('hidden'));
+                if (visibleItems.length > 0) {
+                    visibleItems[0].querySelector('button')?.focus();
+                    e.preventDefault();
+                }
+            }
+        });
+    }
+
+    // Lắng nghe phím mũi tên trên các nút menu để điều hiện lên xuống dễ dàng
+    const menuButtons = document.querySelectorAll('.nav-menu .nav-item button');
+    menuButtons.forEach((btn) => {
+        btn.addEventListener('keydown', (e) => {
+            const currentItem = btn.parentElement;
+            const visibleItems = Array.from(document.querySelectorAll('.nav-menu .nav-item')).filter(item => !item.classList.contains('hidden'));
+            const currentIndex = visibleItems.indexOf(currentItem);
+
+            if (e.key === 'ArrowDown') {
+                const nextItem = visibleItems[currentIndex + 1];
+                if (nextItem) {
+                    nextItem.querySelector('button')?.focus();
+                    e.preventDefault();
+                }
+            } else if (e.key === 'ArrowUp') {
+                const prevItem = visibleItems[currentIndex - 1];
+                if (prevItem) {
+                    prevItem.querySelector('button')?.focus();
+                } else {
+                    // Nếu là phần tử đầu tiên, nhấn mũi tên lên sẽ quay lại ô tìm kiếm
+                    searchInput?.focus();
+                }
+                e.preventDefault();
+            } else if (e.key === 'Escape') {
+                clearMenuSearch();
+                searchInput?.focus();
+                e.preventDefault();
+            }
+        });
+    });
+}
+
 // Khởi chạy đồng hồ thời gian thực và khởi tạo giá trị chuyển đổi
 initLiveClock();
 initEpochInputs();
+initSidebarKeyboardNavigation();
+
 
 
