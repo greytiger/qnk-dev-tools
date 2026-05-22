@@ -1090,9 +1090,14 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
 /* ==================================================== */
 /* Sidebar Search Filter Styling                        */
 /* ==================================================== */
+.sidebar-search-item {
+    list-style: none;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
 .sidebar-search {
     padding: 2px 0;
-    margin-bottom: -8px; /* Tối ưu hóa khoảng cách tới menu điều hướng */
 }
 
 .sidebar-search .search-wrapper {
