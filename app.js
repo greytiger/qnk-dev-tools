@@ -913,6 +913,24 @@ function clearMenuSearch() {
 // ----------------------------------------------------
 function initSidebarKeyboardNavigation() {
     const searchInput = document.getElementById('menu-search-input');
+    const brandLogoLink = document.getElementById('brand-logo-link');
+    
+    // 1. Khi click vào logo thì tải lại trang chính
+    if (brandLogoLink) {
+        brandLogoLink.addEventListener('click', (e) => {
+            if (e.button === 0 && !e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                e.preventDefault();
+                window.location.href = window.location.pathname; // Tải lại trang chính (xóa hash)
+            }
+        });
+    }
+
+    // 2. Tự động focus vào ô tìm kiếm khi truy cập trang chính trên Desktop
+    if (searchInput && (!window.location.hash || window.location.hash === '#config-tab' || window.location.hash === '#')) {
+        if (window.innerWidth > 768) {
+            searchInput.focus();
+        }
+    }
     
     if (searchInput) {
         searchInput.addEventListener('keydown', (e) => {
