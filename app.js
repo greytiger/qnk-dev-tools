@@ -1,20 +1,44 @@
-// Tab Navigation
+// Tab Navigation & Hash-based Router
 const navItems = document.querySelectorAll('.nav-item');
 const tabPanels = document.querySelectorAll('.tab-panel');
 const menuToggleBtn = document.getElementById('menu-toggle-btn');
 const navMenu = document.querySelector('.nav-menu');
 const sidebarBackdrop = document.getElementById('sidebar-backdrop');
 
+function switchTab(tabId) {
+    const targetItem = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
+    const targetPanel = document.getElementById(tabId);
+    
+    if (!targetItem || !targetPanel) return false;
+    
+    // Deactivate all nav items & panels
+    navItems.forEach(nav => nav.classList.remove('active'));
+    tabPanels.forEach(panel => panel.classList.remove('active'));
+
+    // Activate current selection
+    targetItem.classList.add('active');
+    targetPanel.classList.add('active');
+    return true;
+}
+
+function handleRouting() {
+    const hash = window.location.hash.substring(1); // Lấy phần tabId sau ký tự '#'
+    if (hash) {
+        const success = switchTab(hash);
+        if (success) return;
+    }
+    
+    // Nếu không có hash hoặc hash không hợp lệ, mặc định chọn tab active đầu tiên
+    const defaultTab = document.querySelector('.nav-item.active')?.getAttribute('data-tab') || 'config-tab';
+    switchTab(defaultTab);
+}
+
 navItems.forEach(item => {
     item.addEventListener('click', () => {
-        // Deactivate all nav items & panels
-        navItems.forEach(nav => nav.classList.remove('active'));
-        tabPanels.forEach(panel => panel.classList.remove('active'));
-
-        // Activate current selection
-        item.classList.add('active');
         const targetTab = item.getAttribute('data-tab');
-        document.getElementById(targetTab).classList.add('active');
+        
+        // Cập nhật hash lên URL để chia sẻ liên kết trực tiếp
+        window.location.hash = targetTab;
 
         // Collapse menu on mobile after selection
         if (navMenu && navMenu.classList.contains('expanded')) {
@@ -34,6 +58,11 @@ navItems.forEach(item => {
         }
     });
 });
+
+// Đăng ký các sự kiện lắng nghe để định tuyến thời gian thực
+window.addEventListener('hashchange', handleRouting);
+window.addEventListener('DOMContentLoaded', handleRouting);
+
 
 // Mobile Menu Toggle
 if (menuToggleBtn && navMenu) {
