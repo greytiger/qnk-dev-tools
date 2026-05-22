@@ -574,3 +574,237 @@ function copyText(elementId, isTextContent = false) {
         console.error('Không thể sao chép văn bản: ', err);
     });
 }
+
+// ----------------------------------------------------
+// TOOL 6: Epoch/Timestamp Converter
+// ----------------------------------------------------
+let liveClockInterval = null;
+let isLiveClockPaused = false;
+let currentEpochUnit = 'ms';
+
+function initLiveClock() {
+    updateLiveClock();
+    // Cập nhật mượt mà mỗi 50ms để số mili-giây thay đổi liên tục tạo hiệu ứng đẹp
+    liveClockInterval = setInterval(updateLiveClock, 50);
+}
+
+function updateLiveClock() {
+    if (isLiveClockPaused) return;
+    const now = new Date();
+    const liveEpochMs = document.getElementById('live-epoch-ms');
+    const liveLocalTime = document.getElementById('live-local-time');
+    
+    if (liveEpochMs) liveEpochMs.textContent = now.getTime();
+    if (liveLocalTime) liveLocalTime.textContent = formatDate(now);
+}
+
+function toggleLiveClock() {
+    const btn = document.getElementById('btn-toggle-clock');
+    if (!btn) return;
+    
+    isLiveClockPaused = !isLiveClockPaused;
+    if (isLiveClockPaused) {
+        btn.innerHTML = `
+            <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; margin-right: 6px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Tiếp tục
+        `;
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-primary');
+    } else {
+        btn.innerHTML = `
+            <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; margin-right: 6px;"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+            Tạm dừng
+        `;
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-secondary');
+    }
+}
+
+function initEpochInputs() {
+    const now = new Date();
+    
+    // Khởi tạo giá trị ban đầu cho ô nhập Epoch là mốc thời gian hiện tại
+    const inputEpoch = document.getElementById('input-epoch');
+    if (inputEpoch) {
+        inputEpoch.value = now.getTime();
+        convertEpochToDate();
+    }
+    
+    // Khởi tạo bộ chọn ngày giờ
+    const inputDate = document.getElementById('input-date');
+    if (inputDate) {
+        const offset = now.getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(now - offset)).toISOString().slice(0, 16);
+        inputDate.value = localISOTime;
+        convertDateToEpoch();
+    }
+}
+
+function changeEpochUnit(unit) {
+    currentEpochUnit = unit;
+    const badge = document.getElementById('epoch-unit-badge');
+    if (badge) {
+        badge.textContent = unit;
+    }
+    
+    // Tự động quy đổi giá trị hiện tại trong input để hỗ trợ trải nghiệm người dùng tốt hơn
+    const inputEpoch = document.getElementById('input-epoch');
+    if (inputEpoch && inputEpoch.value.trim()) {
+        const val = parseFloat(inputEpoch.value.trim());
+        if (!isNaN(val)) {
+            if (unit === 'ms' && val < 10000000000) {
+                // Đang là giây -> đổi sang mili-giây
+                inputEpoch.value = Math.round(val * 1000);
+            } else if (unit === 's' && val > 9999999999) {
+                // Đang là mili-giây -> đổi sang giây
+                inputEpoch.value = Math.round(val / 1000);
+            }
+        }
+    }
+    convertEpochToDate();
+}
+
+function convertEpochToDate() {
+    const valStr = document.getElementById('input-epoch').value.trim();
+    const localOut = document.getElementById('output-local-time');
+    const utcOut = document.getElementById('output-utc-time');
+    const relativeOut = document.getElementById('output-relative-time');
+    
+    if (!valStr) {
+        localOut.textContent = '-';
+        utcOut.textContent = '-';
+        relativeOut.textContent = '-';
+        return;
+    }
+    
+    let val = parseFloat(valStr);
+    if (isNaN(val)) {
+        localOut.textContent = 'Lỗi: Giá trị không hợp lệ (Không phải là số)';
+        utcOut.textContent = 'Lỗi: Giá trị không hợp lệ (Không phải là số)';
+        relativeOut.textContent = '-';
+        return;
+    }
+    
+    val = Math.round(val);
+    
+    let timestampMs = val;
+    if (currentEpochUnit === 's') {
+        timestampMs = val * 1000;
+    }
+    
+    // Giới hạn Date trong JS để tránh Overflows
+    if (timestampMs < -8640000000000000 || timestampMs > 8640000000000000) {
+        localOut.textContent = 'Lỗi: Thời gian vượt quá giới hạn xử lý';
+        utcOut.textContent = 'Lỗi: Thời gian vượt quá giới hạn xử lý';
+        relativeOut.textContent = '-';
+        return;
+    }
+    
+    const date = new Date(timestampMs);
+    localOut.textContent = formatDate(date);
+    utcOut.textContent = date.toUTCString();
+    relativeOut.textContent = getRelativeTimeString(date);
+}
+
+function convertDateToEpoch() {
+    const dateStr = document.getElementById('input-date').value;
+    const msOut = document.getElementById('output-epoch-ms');
+    const sOut = document.getElementById('output-epoch-s');
+    
+    if (!dateStr) {
+        msOut.textContent = '-';
+        sOut.textContent = '-';
+        return;
+    }
+    
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+        msOut.textContent = 'Lỗi: Ngày giờ không hợp lệ';
+        sOut.textContent = 'Lỗi: Ngày giờ không hợp lệ';
+        return;
+    }
+    
+    const epochMs = date.getTime();
+    const epochS = Math.floor(epochMs / 1000);
+    
+    msOut.textContent = epochMs;
+    sOut.textContent = epochS;
+}
+
+function presetDate(preset) {
+    const now = new Date();
+    const inputDate = document.getElementById('input-date');
+    if (!inputDate) return;
+    
+    let targetDate = new Date();
+    if (preset === 'now') {
+        targetDate = now;
+    } else if (preset === 'today-start') {
+        targetDate.setHours(0, 0, 0, 0);
+    } else if (preset === 'yesterday-start') {
+        targetDate.setDate(targetDate.getDate() - 1);
+        targetDate.setHours(0, 0, 0, 0);
+    }
+    
+    const offset = targetDate.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(targetDate - offset)).toISOString().slice(0, 16);
+    inputDate.value = localISOTime;
+    
+    convertDateToEpoch();
+}
+
+function formatDate(date) {
+    const pad = (n) => n.toString().padStart(2, '0');
+    const day = pad(date.getDate());
+    const month = pad(date.getMonth() + 1);
+    const year = date.getFullYear();
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+    const ms = date.getMilliseconds().toString().padStart(3, '0');
+    
+    // Timezone offset
+    const offsetMin = date.getTimezoneOffset();
+    const offsetSign = offsetMin <= 0 ? '+' : '-';
+    const offsetHours = pad(Math.floor(Math.abs(offsetMin) / 60));
+    const offsetMinutes = pad(Math.abs(offsetMin) % 60);
+    
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}.${ms} GMT${offsetSign}${offsetHours}:${offsetMinutes}`;
+}
+
+function getRelativeTimeString(date) {
+    const now = new Date();
+    const diffMs = date.getTime() - now.getTime();
+    const diffSec = Math.round(diffMs / 1000);
+    const absSec = Math.abs(diffSec);
+    
+    if (absSec < 5) return 'vừa xong';
+    
+    const isFuture = diffSec > 0;
+    
+    const units = [
+        { name: 'năm', seconds: 31536000 },
+        { name: 'tháng', seconds: 2592000 },
+        { name: 'ngày', seconds: 86400 },
+        { name: 'giờ', seconds: 3600 },
+        { name: 'phút', seconds: 60 },
+        { name: 'giây', seconds: 1 }
+    ];
+    
+    for (let unit of units) {
+        if (absSec >= unit.seconds) {
+            const value = Math.floor(absSec / unit.seconds);
+            if (isFuture) {
+                return `${value} ${unit.name} tới`;
+            } else {
+                return `${value} ${unit.name} trước`;
+            }
+        }
+    }
+    return 'vừa xong';
+}
+
+// Khởi chạy đồng hồ thời gian thực và khởi tạo giá trị chuyển đổi
+initLiveClock();
+initEpochInputs();
+

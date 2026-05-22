@@ -952,3 +952,116 @@ select:focus {
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.15);
 }
+
+/* ==================================================== */
+/* Epoch / Timestamp Converter UI Styling               */
+/* ==================================================== */
+.live-clock-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 16px;
+    padding: 20px 24px;
+    gap: 20px;
+    flex-wrap: wrap;
+    box-shadow: inset 0 0 20px rgba(99, 102, 241, 0.05);
+    margin-bottom: 8px;
+}
+
+.live-clock-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.live-clock-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.live-clock-value-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.live-clock-value-container span {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+}
+
+.live-clock-controls {
+    display: flex;
+    align-items: center;
+}
+
+.epoch-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 8px;
+}
+
+.epoch-result-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.result-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.result-value-box {
+    position: relative;
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 10px 40px 10px 12px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: white;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    transition: var(--transition-smooth);
+}
+
+.result-value-box:hover {
+    border-color: rgba(99, 102, 241, 0.25);
+    background: rgba(15, 23, 42, 0.5);
+}
+
+.result-value-box span {
+    word-break: break-all;
+}
+
+.result-value-box .btn-copy {
+    top: 50%;
+    transform: translateY(-50%);
+    right: 8px;
+}
+
+/* Datetime picker field custom override style */
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) sepia(50%) saturate(1000%) hue-rotate(200deg);
+    cursor: pointer;
+    opacity: 0.7;
+    transition: var(--transition-smooth);
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}

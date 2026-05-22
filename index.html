@@ -69,6 +69,12 @@
                         JWT & Encryption Tools
                     </button>
                 </li>
+                <li class="nav-item" data-tab="epoch-tab">
+                    <button>
+                        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="12" cy="16" r="3"/></svg>
+                        Epoch/Timestamp Converter
+                    </button>
+                </li>
             </ul>
             
             <div class="sidebar-footer">
@@ -422,6 +428,142 @@
                             </div>
                         </div>
                         
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SECTION 6: Epoch/Timestamp Converter -->
+            <div id="epoch-tab" class="tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="12" cy="16" r="3"/></svg>
+                            <div>
+                               <h2>Bộ chuyển đổi Epoch/Timestamp</h2>
+                               <div class="panel-description">Chuyển đổi thời gian dạng milliseconds hoặc seconds sang ngày giờ hệ thống hiện tại, UTC và ngược lại. Hỗ trợ hiển thị thời gian thực.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live System Clock Dashboard -->
+                    <div class="live-clock-banner">
+                        <div class="live-clock-metric">
+                            <span class="live-clock-label">Epoch Milliseconds hiện tại</span>
+                            <div class="live-clock-value-container">
+                                <span id="live-epoch-ms">---------</span>
+                                <button class="btn-copy" onclick="copyText('live-epoch-ms', true)" style="position: static; width: 32px; height: 32px;" title="Copy Epoch Milliseconds">
+                                    <svg viewBox="0 0 24 24" id="icon-copy-live-epoch-ms"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="live-clock-metric">
+                            <span class="live-clock-label">Giờ hệ thống hiện tại</span>
+                            <div class="live-clock-value-container">
+                                <span id="live-local-time">---------</span>
+                            </div>
+                        </div>
+                        <div class="live-clock-controls">
+                            <button id="btn-toggle-clock" class="btn btn-secondary" onclick="toggleLiveClock()">
+                                <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5;"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+                                Tạm dừng
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid-2col" style="margin-top: 24px;">
+                        <!-- Column 1: Timestamp to Date-Time -->
+                        <div class="util-card">
+                            <h3>
+                                <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: var(--color-primary); stroke-width: 2; fill: none;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                Timestamp (Epoch) → Ngày Giờ
+                            </h3>
+                            
+                            <div class="util-input-group">
+                                <label for="input-epoch">Nhập Timestamp (Epoch)</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="input-epoch" value="" oninput="convertEpochToDate()" placeholder="Ví dụ: 1716346769000">
+                                    <span id="epoch-unit-badge" class="input-badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.4);">ms</span>
+                                </div>
+                            </div>
+
+                            <div class="util-input-group" style="flex-direction: row; gap: 16px; margin: 4px 0;">
+                                <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; text-transform: none; color: var(--text-muted); font-size: 12px;">
+                                    <input type="radio" name="epoch-unit" value="ms" checked onchange="changeEpochUnit('ms')"> Milliseconds (13 số)
+                                </label>
+                                <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; text-transform: none; color: var(--text-muted); font-size: 12px;">
+                                    <input type="radio" name="epoch-unit" value="s" onchange="changeEpochUnit('s')"> Seconds (10 số)
+                                </label>
+                            </div>
+
+                            <div class="epoch-results-list">
+                                <div class="epoch-result-item">
+                                    <span class="result-label">Múi giờ hệ thống (Local)</span>
+                                    <div class="result-value-box">
+                                        <span id="output-local-time">-</span>
+                                        <button class="btn-copy" onclick="copyText('output-local-time', true)" style="position: static; width: 26px; height: 26px;" title="Copy">
+                                            <svg viewBox="0 0 24 24" id="icon-copy-output-local-time"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="epoch-result-item">
+                                    <span class="result-label">Giờ quốc tế (UTC)</span>
+                                    <div class="result-value-box">
+                                        <span id="output-utc-time">-</span>
+                                        <button class="btn-copy" onclick="copyText('output-utc-time', true)" style="position: static; width: 26px; height: 26px;" title="Copy">
+                                            <svg viewBox="0 0 24 24" id="icon-copy-output-utc-time"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="epoch-result-item">
+                                    <span class="result-label">Thời gian tương đối (Relative)</span>
+                                    <div class="result-value-box">
+                                        <span id="output-relative-time" style="color: var(--color-secondary); font-weight: 500;">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column 2: Date-Time to Timestamp -->
+                        <div class="util-card">
+                            <h3>
+                                <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: var(--color-primary); stroke-width: 2; fill: none;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                Ngày Giờ → Timestamp (Epoch)
+                            </h3>
+                            
+                            <div class="util-input-group">
+                                <label for="input-date">Chọn Ngày & Giờ</label>
+                                <div class="input-wrapper">
+                                    <input type="datetime-local" id="input-date" oninput="convertDateToEpoch()" style="width: 100%; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--panel-border); border-radius: 8px; padding: 8px 12px; color: white; outline: none; font-family: var(--font-sans);">
+                                </div>
+                            </div>
+
+                            <div class="util-input-group" style="flex-direction: row; gap: 8px; margin: 4px 0; flex-wrap: wrap;">
+                                <button class="btn btn-secondary" onclick="presetDate('now')" style="padding: 6px 12px; font-size: 11px; border-radius: 6px;">Bây giờ</button>
+                                <button class="btn btn-secondary" onclick="presetDate('today-start')" style="padding: 6px 12px; font-size: 11px; border-radius: 6px;">Đầu ngày</button>
+                                <button class="btn btn-secondary" onclick="presetDate('yesterday-start')" style="padding: 6px 12px; font-size: 11px; border-radius: 6px;">Hôm qua</button>
+                            </div>
+
+                            <div class="epoch-results-list" style="margin-top: 10px;">
+                                <div class="epoch-result-item">
+                                    <span class="result-label">Epoch Milliseconds (13 số)</span>
+                                    <div class="result-value-box">
+                                        <span id="output-epoch-ms">-</span>
+                                        <button class="btn-copy" onclick="copyText('output-epoch-ms', true)" style="position: static; width: 26px; height: 26px;" title="Copy">
+                                            <svg viewBox="0 0 24 24" id="icon-copy-output-epoch-ms"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="epoch-result-item">
+                                    <span class="result-label">Epoch Seconds (10 số)</span>
+                                    <div class="result-value-box">
+                                        <span id="output-epoch-s">-</span>
+                                        <button class="btn-copy" onclick="copyText('output-epoch-s', true)" style="position: static; width: 26px; height: 26px;" title="Copy">
+                                            <svg viewBox="0 0 24 24" id="icon-copy-output-epoch-s"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
