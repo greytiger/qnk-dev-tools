@@ -843,7 +843,8 @@ const menuKeywords = {
     'jvm-tab': ['jvm', 'heap', 'ram', 'memory', 'calculator', 'gc', 'parallelgc', 'g1gc', 'kubernetes', 'oom', 'bộ nhớ', 'tính toán'],
     'cron-tab': ['scheduled', 'cron', 'task', 'timer', 'expression', 'job', 'spring', 'định kỳ', 'lịch trình'],
     'codec-tab': ['jwt', 'decode', 'base64', 'encrypt', 'authorization', 'basic', 'auth', 'security', 'mã hóa', 'giải mã', 'bảo mật'],
-    'epoch-tab': ['epoch', 'timestamp', 'time', 'date', 'millisecond', 'second', 'hệ thống', 'local', 'utc', 'thời gian', 'mili', 'giây']
+    'epoch-tab': ['epoch', 'timestamp', 'time', 'date', 'millisecond', 'second', 'hệ thống', 'local', 'utc', 'thời gian', 'mili', 'giây'],
+    'markdown-tab': ['markdown', 'md', 'docx', 'pdf', 'word', 'convert', 'document', 'chuyển đổi', 'tài liệu', 'văn bản']
 };
 
 function filterSidebarMenu() {
@@ -984,6 +985,479 @@ function initSidebarKeyboardNavigation() {
 initLiveClock();
 initEpochInputs();
 initSidebarKeyboardNavigation();
+
+// ----------------------------------------------------
+// TOOL 7: DOCX/PDF to Markdown Converter
+// ----------------------------------------------------
+let selectedMdFile = null;
+
+// Initialize PDF.js worker
+if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+function initMarkdownConverter() {
+    const dropzone = document.getElementById('md-dropzone');
+    const fileInput = document.getElementById('md-file-input');
+    const fileInfo = document.getElementById('md-file-info');
+    const fileNameText = document.getElementById('md-file-name');
+    const fileSizeText = document.getElementById('md-file-size');
+    const fileIconWrapper = document.getElementById('md-file-icon-wrapper');
+    const btnRemoveFile = document.getElementById('btn-remove-md-file');
+    const btnConvert = document.getElementById('btn-convert-md');
+    const progressContainer = document.getElementById('md-progress-container');
+    const progressBar = document.getElementById('md-progress-bar');
+    const progressStatus = document.getElementById('md-progress-status');
+    const progressPercent = document.getElementById('md-progress-percent');
+    const optionsPanel = document.getElementById('md-options-panel');
+    const pdfOptions = document.getElementById('pdf-parsing-options');
+    const markdownOutput = document.getElementById('markdown-output');
+    const resultActions = document.getElementById('markdown-result-actions');
+    const charCountText = document.getElementById('md-char-count');
+    const wordCountText = document.getElementById('md-word-count');
+    const btnDownload = document.getElementById('btn-download-md');
+
+    if (!dropzone || !fileInput) return;
+
+    // Trigger click on file input when dropzone is clicked
+    dropzone.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    // Handle drag events
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.add('dragover');
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('dragover');
+        }, false);
+    });
+
+    // Handle dropped files
+    dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length > 0) {
+            handleSelectedFile(files[0]);
+        }
+    });
+
+    // Handle file input change
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleSelectedFile(e.target.files[0]);
+        }
+    });
+
+    // Remove file selection
+    btnRemoveFile.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent triggering dropzone click
+        resetConverterState();
+    });
+
+    // Convert file action
+    btnConvert.addEventListener('click', async () => {
+        if (!selectedMdFile) return;
+
+        // Reset output & display progress
+        markdownOutput.value = '';
+        resultActions.style.display = 'none';
+        progressContainer.style.display = 'flex';
+        progressBar.style.width = '0%';
+        progressPercent.textContent = '0%';
+        progressStatus.textContent = 'Đang khởi động tiến trình...';
+        
+        btnConvert.disabled = true;
+        btnRemoveFile.disabled = true;
+
+        const isPagebreaks = document.getElementById('md-include-pagebreaks').checked;
+        const pdfMode = document.getElementById('pdf-extraction-mode').value;
+
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const arrayBuffer = e.target.result;
+                let markdown = '';
+
+                if (selectedMdFile.name.endsWith('.docx')) {
+                    updateMdProgress('Đang chuyển đổi tệp Word...', 50);
+                    markdown = await parseDocxToMarkdown(arrayBuffer);
+                } else if (selectedMdFile.name.endsWith('.pdf')) {
+                    markdown = await parsePdfToMarkdown(arrayBuffer, isPagebreaks, pdfMode);
+                }
+
+                // Show completed state
+                updateMdProgress('Chuyển đổi hoàn tất!', 100);
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                    btnConvert.disabled = false;
+                    btnRemoveFile.disabled = false;
+                    
+                    markdownOutput.value = markdown;
+                    updateStats(markdown);
+                    resultActions.style.display = 'flex';
+                }, 500);
+
+            } catch (error) {
+                console.error(error);
+                progressStatus.textContent = 'Lỗi: ' + error.message;
+                progressBar.style.backgroundColor = 'var(--color-danger)';
+                btnConvert.disabled = false;
+                btnRemoveFile.disabled = false;
+                markdownOutput.value = `### Đã xảy ra lỗi trong quá trình chuyển đổi\n\nChi tiết lỗi: ${error.message}`;
+            }
+        };
+
+        reader.onerror = function() {
+            progressStatus.textContent = 'Lỗi đọc tệp tin!';
+            btnConvert.disabled = false;
+            btnRemoveFile.disabled = false;
+        };
+
+        reader.readAsArrayBuffer(selectedMdFile);
+    });
+
+    // Download Markdown action
+    btnDownload.addEventListener('click', () => {
+        const text = markdownOutput.value;
+        if (!text) return;
+
+        const blob = new Blob([text], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        
+        // Use original filename with .md extension
+        const originalName = selectedMdFile ? selectedMdFile.name : 'document';
+        const lastDot = originalName.lastIndexOf('.');
+        const nameWithoutExt = lastDot !== -1 ? originalName.substring(0, lastDot) : originalName;
+        a.download = `${nameWithoutExt}.md`;
+        
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    function handleSelectedFile(file) {
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (ext !== 'docx' && ext !== 'pdf') {
+            alert('Chỉ chấp nhận các tệp định dạng .docx hoặc .pdf!');
+            return;
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+            alert('Kích thước tệp vượt quá giới hạn cho phép (tối đa 10MB)!');
+            return;
+        }
+
+        selectedMdFile = file;
+
+        // Set name and size
+        fileNameText.textContent = file.name;
+        fileSizeText.textContent = formatBytes(file.size);
+
+        // Set icon class
+        fileIconWrapper.className = `file-icon ${ext}`;
+        if (ext === 'docx') {
+            fileIconWrapper.innerHTML = `
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15h6M9 11h6M9 19h3"/></svg>
+            `;
+            pdfOptions.style.display = 'none';
+        } else {
+            fileIconWrapper.innerHTML = `
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            `;
+            pdfOptions.style.display = 'block';
+        }
+
+        // Show info & options panels
+        fileInfo.style.display = 'flex';
+        optionsPanel.style.display = 'flex';
+        dropzone.style.display = 'none';
+        btnConvert.disabled = false;
+        
+        // Reset output
+        markdownOutput.value = '';
+        resultActions.style.display = 'none';
+        progressContainer.style.display = 'none';
+    }
+
+    function resetConverterState() {
+        selectedMdFile = null;
+        fileInput.value = '';
+        fileInfo.style.display = 'none';
+        optionsPanel.style.display = 'none';
+        dropzone.style.display = 'flex';
+        btnConvert.disabled = true;
+        
+        markdownOutput.value = '';
+        resultActions.style.display = 'none';
+        progressContainer.style.display = 'none';
+    }
+
+    function updateMdProgress(status, percent) {
+        progressStatus.textContent = status;
+        progressBar.style.width = `${percent}%`;
+        progressPercent.textContent = `${percent}%`;
+        progressBar.style.backgroundColor = ''; // Reset error color if any
+    }
+
+    function updateStats(text) {
+        const charCount = text.length;
+        // Simple word count supporting unicode/vietnamese
+        const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+        
+        charCountText.textContent = `${charCount.toLocaleString()} ký tự`;
+        wordCountText.textContent = `${wordCount.toLocaleString()} từ`;
+    }
+
+    function formatBytes(bytes, decimals = 2) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+}
+
+// DOCX to HTML & Markdown Parser
+function parseDocxToMarkdown(arrayBuffer) {
+    return new Promise((resolve, reject) => {
+        mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+            .then(function(result) {
+                const html = result.value;
+                const turndownService = new TurndownService({
+                    headingStyle: 'atx',
+                    hr: '---',
+                    bulletListMarker: '-',
+                    codeBlockStyle: 'fenced'
+                });
+                
+                // Keep tables formatting by adding simple markdown tables generator
+                turndownService.addRule('table', {
+                    filter: 'table',
+                    replacement: function(content, node) {
+                        let markdownTable = '\n\n';
+                        const rows = Array.from(node.rows);
+                        if (rows.length === 0) return '';
+                        
+                        rows.forEach((row, rowIndex) => {
+                            const cells = Array.from(row.cells);
+                            let rowText = '|';
+                            cells.forEach(cell => {
+                                const cellContent = cell.textContent.trim().replace(/\n/g, ' ');
+                                rowText += ` ${cellContent} |`;
+                            });
+                            markdownTable += rowText + '\n';
+                            
+                            if (rowIndex === 0) {
+                                let separatorRow = '|';
+                                cells.forEach(() => {
+                                    separatorRow += ' --- |';
+                                });
+                                markdownTable += separatorRow + '\n';
+                            }
+                        });
+                        
+                        return markdownTable + '\n';
+                    }
+                });
+
+                const markdown = turndownService.turndown(html);
+                resolve(markdown);
+            })
+            .catch(function(err) {
+                reject(err);
+            });
+    });
+}
+
+// PDF to text and layout analysis Markdown Parser
+async function parsePdfToMarkdown(arrayBuffer, includePagebreaks, mode) {
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let markdown = '';
+    
+    // Global progress updating function helper
+    const progressContainer = document.getElementById('md-progress-container');
+    const progressBar = document.getElementById('md-progress-bar');
+    const progressStatus = document.getElementById('md-progress-status');
+    const progressPercent = document.getElementById('md-progress-percent');
+    function localUpdateProgress(status, percent) {
+        if (progressStatus && progressBar && progressPercent) {
+            progressStatus.textContent = status;
+            progressBar.style.width = `${percent}%`;
+            progressPercent.textContent = `${percent}%`;
+        }
+    }
+
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const progressVal = Math.round((pageNum / pdf.numPages) * 100);
+        localUpdateProgress(`Đang trích xuất trang ${pageNum}/${pdf.numPages}...`, progressVal);
+        
+        const page = await pdf.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        
+        if (pageNum > 1) {
+            if (includePagebreaks) {
+                markdown += `\n\n--- (Trang ${pageNum}) ---\n\n`;
+            } else {
+                markdown += '\n\n';
+            }
+        } else if (includePagebreaks) {
+            markdown += `--- (Trang 1) ---\n\n`;
+        }
+        
+        if (mode === 'plain') {
+            const items = textContent.items.map(item => ({
+                str: item.str,
+                x: item.transform[4],
+                y: item.transform[5],
+                height: item.height
+            }));
+            
+            items.sort((a, b) => {
+                if (Math.abs(a.y - b.y) < 5) {
+                    return a.x - b.x;
+                }
+                return b.y - a.y;
+            });
+            
+            let lastY = null;
+            let pageText = '';
+            for (const item of items) {
+                if (lastY !== null && Math.abs(item.y - lastY) > 5) {
+                    pageText += '\n';
+                }
+                pageText += item.str;
+                lastY = item.y;
+            }
+            markdown += pageText;
+        } else {
+            const items = textContent.items.map(item => ({
+                str: item.str,
+                x: item.transform[4],
+                y: item.transform[5],
+                width: item.width,
+                height: item.height,
+                fontName: item.fontName
+            }));
+            
+            if (items.length === 0) continue;
+            
+            // Group items into lines
+            items.sort((a, b) => b.y - a.y);
+            
+            const lines = [];
+            let currentLine = [];
+            let currentY = null;
+            
+            for (const item of items) {
+                if (currentY === null) {
+                    currentLine.push(item);
+                    currentY = item.y;
+                } else if (Math.abs(item.y - currentY) < Math.max(item.height * 0.5, 4)) {
+                    currentLine.push(item);
+                } else {
+                    currentLine.sort((a, b) => a.x - b.x);
+                    lines.push(currentLine);
+                    currentLine = [item];
+                    currentY = item.y;
+                }
+            }
+            if (currentLine.length > 0) {
+                currentLine.sort((a, b) => a.x - b.x);
+                lines.push(currentLine);
+            }
+            
+            let heightSum = 0;
+            let textItemsCount = 0;
+            for (const line of lines) {
+                for (const item of line) {
+                    if (item.str.trim()) {
+                        heightSum += item.height;
+                        textItemsCount++;
+                    }
+                }
+            }
+            const avgHeight = textItemsCount > 0 ? (heightSum / textItemsCount) : 10;
+            
+            let lastLineY = null;
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                let lineText = '';
+                let lastX = null;
+                let lineMaxHeight = 0;
+                let isBold = false;
+                
+                for (const item of line) {
+                    if (lastX !== null && (item.x - lastX) > 4) {
+                        lineText += ' ';
+                    }
+                    lineText += item.str;
+                    lastX = item.x + item.width;
+                    if (item.height > lineMaxHeight) {
+                        lineMaxHeight = item.height;
+                    }
+                    if (item.fontName && (item.fontName.toLowerCase().includes('bold') || item.fontName.toLowerCase().includes('g_d0_f2'))) {
+                        isBold = true;
+                    }
+                }
+                
+                const trimmed = lineText.trim();
+                if (!trimmed) continue;
+                
+                const currentLineY = line[0].y;
+                if (lastLineY !== null) {
+                    const yDiff = Math.abs(lastLineY - currentLineY);
+                    if (yDiff > lineMaxHeight * 2.2) {
+                        markdown += '\n\n';
+                    } else if (yDiff > lineMaxHeight * 1.2) {
+                        markdown += '\n';
+                    }
+                }
+                
+                lastLineY = currentLineY;
+                
+                if (lineMaxHeight > avgHeight * 1.6) {
+                    if (lineMaxHeight > avgHeight * 2.2) {
+                        markdown += `# ${trimmed}\n`;
+                    } else if (lineMaxHeight > avgHeight * 1.8) {
+                        markdown += `## ${trimmed}\n`;
+                    } else {
+                        markdown += `### ${trimmed}\n`;
+                    }
+                } else if (trimmed.startsWith('•') || trimmed.startsWith('o') || trimmed.startsWith('-') || trimmed.startsWith('*')) {
+                    const cleanVal = trimmed.replace(/^[•o\-*]\s*/, '');
+                    markdown += `- ${cleanVal}`;
+                } else if (/^\d+[\.\)]\s/.test(trimmed)) {
+                    markdown += trimmed;
+                } else if (isBold && trimmed.length < 80) {
+                    markdown += `**${trimmed}**`;
+                } else {
+                    markdown += trimmed;
+                }
+            }
+        }
+    }
+    
+    return markdown;
+}
+
+// Khởi chạy đồng hồ thời gian thực và khởi tạo giá trị chuyển đổi
+initLiveClock();
+initEpochInputs();
+initSidebarKeyboardNavigation();
+initMarkdownConverter();
 
 
 

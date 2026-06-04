@@ -91,6 +91,12 @@
                         Epoch/Timestamp Converter
                     </button>
                 </li>
+                <li class="nav-item" data-tab="markdown-tab">
+                    <button>
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        DOCX/PDF to Markdown
+                    </button>
+                </li>
             </ul>
             
             <div class="sidebar-footer">
@@ -584,11 +590,128 @@
                 </div>
             </div>
             
+            <!-- SECTION 7: DOCX/PDF to Markdown Converter -->
+            <div id="markdown-tab" class="tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                            <div>
+                               <h2>Chuyển đổi DOCX / PDF sang Markdown</h2>
+                               <div class="panel-description">Chuyển đổi các tài liệu Word (.docx) hoặc PDF sang văn bản định dạng Markdown (.md) trực tiếp trên trình duyệt.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2col">
+                        <!-- Left Column: Upload and Settings -->
+                        <div class="editor-container">
+                            <div class="editor-label">
+                                <span>Tải lên tài liệu</span>
+                            </div>
+                            
+                            <!-- Drag & Drop Zone -->
+                            <div class="dropzone" id="md-dropzone">
+                                <div class="dropzone-content">
+                                    <svg viewBox="0 0 24 24" class="dropzone-icon">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                                    </svg>
+                                    <p class="dropzone-title">Kéo thả tệp tin vào đây hoặc click để chọn</p>
+                                    <p class="dropzone-support">Hỗ trợ định dạng Word (.docx) và PDF (.pdf) tối đa 10MB</p>
+                                    <input type="file" id="md-file-input" accept=".docx,.pdf" style="display: none;">
+                                </div>
+                            </div>
+
+                            <!-- Selected File Info (hidden initially) -->
+                            <div class="file-info-card" id="md-file-info" style="display: none;">
+                                <div class="file-info-details">
+                                    <div class="file-icon" id="md-file-icon-wrapper">
+                                        <!-- SVG will be injected here depending on type -->
+                                    </div>
+                                    <div class="file-meta">
+                                        <span class="file-name" id="md-file-name">filename.docx</span>
+                                        <span class="file-size" id="md-file-size">1.2 MB</span>
+                                    </div>
+                                </div>
+                                <button class="btn-remove-file" id="btn-remove-md-file" title="Xóa tệp">
+                                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </button>
+                            </div>
+
+                            <!-- Parser Options -->
+                            <div class="md-options-panel" id="md-options-panel" style="display: none;">
+                                <h3>Cấu hình chuyển đổi</h3>
+                                <div class="form-group" id="pdf-parsing-options" style="display: none;">
+                                    <label>Cách trích xuất PDF</label>
+                                    <div class="select-wrapper">
+                                        <select id="pdf-extraction-mode">
+                                            <option value="layout">Phân tích bố cục (Heuristic - đề xuất)</option>
+                                            <option value="plain">Trích xuất văn bản thuần (Plain Text)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group mt-10">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="md-include-pagebreaks" checked> Thêm dấu ngắt trang (Trang 1, Trang 2...)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Convert Action Button -->
+                            <button class="btn btn-primary w-full justify-center" id="btn-convert-md" disabled>
+                                <svg viewBox="0 0 24 24" class="icon-16"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                Bắt đầu chuyển đổi
+                            </button>
+
+                            <!-- Progress Indicator -->
+                            <div class="progress-container" id="md-progress-container" style="display: none;">
+                                <div class="progress-header">
+                                    <span id="md-progress-status">Đang xử lý tệp...</span>
+                                    <span id="md-progress-percent">0%</span>
+                                </div>
+                                <div class="progress-bar-wrapper">
+                                    <div class="progress-bar" id="md-progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Resulting Markdown -->
+                        <div class="editor-container">
+                            <div class="editor-label">
+                                <span>Kết quả Markdown</span>
+                                <div class="editor-actions">
+                                    <button class="btn-copy relative" onclick="copyText('markdown-output')" title="Sao chép toàn bộ">
+                                        <svg viewBox="0 0 24 24" id="icon-copy-markdown-output"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="editor-wrapper relative">
+                                <textarea id="markdown-output" placeholder="Văn bản định dạng Markdown sẽ xuất hiện tại đây..." readonly></textarea>
+                            </div>
+                            <div class="flex-row-between mt-10" id="markdown-result-actions" style="display: none;">
+                                <div class="stats-text">
+                                    <span id="md-char-count">0 ký tự</span> • <span id="md-word-count">0 từ</span>
+                                </div>
+                                <button class="btn btn-secondary btn-sm" id="btn-download-md">
+                                    <svg viewBox="0 0 24 24" class="icon-14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                    Tải xuống (.md)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
         </main>
     </div>
 
     <!-- Sidebar Backdrop for Mobile Drawer -->
     <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <!-- Third-party Libraries for DOCX & PDF conversion -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
+    <script src="https://unpkg.com/turndown/dist/turndown.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <!-- Core Business Logic Script -->
     <script src="app.js?v=1.0.1"></script>
