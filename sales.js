@@ -241,6 +241,7 @@
 
         if (parseInt(userInput.trim()) === correctAnswer) {
             salesDb = {
+                categories: [],
                 storeInfo: {
                     name: "Cửa hàng mới",
                     address: "",
