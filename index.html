@@ -720,31 +720,6 @@
                                <div class="panel-description">Hệ thống lưu trữ độc lập sản phẩm, thông tin khách hàng và đơn hàng trực tiếp trên thiết bị của bạn.</div>
                             </div>
                         </div>
-                        
-                        <!-- DB Backup Actions -->
-                        <div class="db-controls">
-                            <div class="db-status">
-                                <span class="db-status-dot"></span>
-                                <span id="sales-db-status-text">Đang tải...</span>
-                            </div>
-                            <button class="btn btn-secondary btn-sm" id="btn-export-sales-json" title="Xuất toàn bộ cơ sở dữ liệu ra file JSON">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                                Xuất file JSON
-                            </button>
-                            <button class="btn btn-secondary btn-sm" id="btn-import-sales-json" title="Nhập cơ sở dữ liệu từ file JSON">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                                Nhập file JSON
-                            </button>
-                            <input type="file" id="sales-import-file-input" accept=".json" style="display: none;">
-                            <button class="btn btn-secondary btn-sm" id="btn-reset-sales-db" style="border-color: rgba(239,68,68,0.2); color: var(--color-danger);" title="Xóa dữ liệu hiện tại, khôi phục mẫu">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 4px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                Reset mẫu
-                            </button>
-                            <button class="btn btn-secondary btn-sm" id="btn-clear-sales-db" style="border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.05); color: var(--color-danger);" title="Xóa sạch toàn bộ cơ sở dữ liệu">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 4px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                                Xóa sạch dữ liệu
-                            </button>
-                        </div>
                     </div>
                     
                     <!-- Sub-tabs Navigation inside Sales Tab -->
@@ -962,6 +937,37 @@
 
                     <!-- 5. CONFIGURATION SUB-PANEL -->
                     <div id="sales-sub-settings" class="sales-sub-panel">
+                        
+                        <!-- DB Backup & Restore Controls -->
+                        <div class="editor-container" style="padding: 20px; background: rgba(255,255,255,0.01); border: 1px solid var(--panel-border); border-radius: 12px; margin-bottom: 24px;">
+                            <h3 style="margin-bottom: 12px; color: #ffffff;">Quản lý dữ liệu & Sao lưu (JSON)</h3>
+                            <p class="panel-description" style="margin-bottom: 20px;">Dữ liệu được lưu trữ tự động trên trình duyệt này. Sử dụng các chức năng dưới đây để sao lưu ra máy hoặc nạp lại dữ liệu.</p>
+                            
+                            <div class="db-controls" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: rgba(0,0,0,0.15); padding: 12px 16px; border-radius: 10px; border: 1px solid var(--panel-border);">
+                                <div class="db-status">
+                                    <span class="db-status-dot"></span>
+                                    <span id="sales-db-status-text">Đang tải...</span>
+                                </div>
+                                <button type="button" class="btn btn-secondary btn-sm" id="btn-export-sales-json" title="Xuất toàn bộ cơ sở dữ liệu ra file JSON">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                    Xuất file JSON
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm" id="btn-import-sales-json" title="Nhập cơ sở dữ liệu từ file JSON">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                                    Nhập file JSON
+                                </button>
+                                <input type="file" id="sales-import-file-input" accept=".json" style="display: none;">
+                                <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-sales-db" style="border-color: rgba(239,68,68,0.2); color: var(--color-danger);" title="Xóa dữ liệu hiện tại, khôi phục mẫu">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 4px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                    Reset mẫu
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm" id="btn-clear-sales-db" style="border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.05); color: var(--color-danger);" title="Xóa sạch toàn bộ cơ sở dữ liệu">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 4px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    Xóa sạch dữ liệu
+                                </button>
+                            </div>
+                        </div>
+
                         <form id="sales-settings-form">
                             <div class="grid-2col">
                                 <!-- Store profile information -->
