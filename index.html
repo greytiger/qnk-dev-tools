@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=1.0.1">
+    <link rel="stylesheet" href="sales.css?v=1.0.1">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2.2'%3E%3Cpolygon points='12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2'/%3E%3Cpolyline points='2 8.5 12 15 22 8.5'/%3E%3Cline x1='12' y1='15' x2='12' y2='22'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -95,6 +96,12 @@
                     <button>
                         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                         DOCX/PDF to Markdown
+                    </button>
+                </li>
+                <li class="nav-item" data-tab="sales-tab">
+                    <button>
+                        <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        Quản lý bán hàng
                     </button>
                 </li>
             </ul>
@@ -701,6 +708,562 @@
                     </div>
                 </div>
             </div>
+
+            <!-- SECTION 8: Sales Management Tab -->
+            <div id="sales-tab" class="tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                            <div>
+                               <h2>Quản lý Bán hàng Cục bộ</h2>
+                               <div class="panel-description">Hệ thống lưu trữ độc lập sản phẩm, thông tin khách hàng và đơn hàng trực tiếp trên thiết bị của bạn.</div>
+                            </div>
+                        </div>
+                        
+                        <!-- DB Backup Actions -->
+                        <div class="db-controls">
+                            <div class="db-status">
+                                <span class="db-status-dot"></span>
+                                <span id="sales-db-status-text">Đang tải...</span>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" id="btn-export-sales-json" title="Xuất toàn bộ cơ sở dữ liệu ra file JSON">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                Xuất file JSON
+                            </button>
+                            <button class="btn btn-secondary btn-sm" id="btn-import-sales-json" title="Nhập cơ sở dữ liệu từ file JSON">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                                Nhập file JSON
+                            </button>
+                            <input type="file" id="sales-import-file-input" accept=".json" style="display: none;">
+                            <button class="btn btn-secondary btn-sm" id="btn-reset-sales-db" style="border-color: rgba(239,68,68,0.2); color: var(--color-danger);" title="Xóa dữ liệu hiện tại, khôi phục mẫu">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 4px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                Reset mẫu
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Sub-tabs Navigation inside Sales Tab -->
+                    <div class="sales-sub-nav">
+                        <button class="sales-nav-btn active" data-sales-sub="sales-sub-dashboard">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                            Tổng quan
+                        </button>
+                        <button class="sales-nav-btn" data-sales-sub="sales-sub-products">
+                            <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                            Sản phẩm
+                        </button>
+                        <button class="sales-nav-btn" data-sales-sub="sales-sub-customers">
+                            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            Khách hàng
+                        </button>
+                        <button class="sales-nav-btn" data-sales-sub="sales-sub-orders">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                            Đơn hàng
+                        </button>
+                        <button class="sales-nav-btn" data-sales-sub="sales-sub-settings">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                            Cấu hình
+                        </button>
+                    </div>
+
+                    <!-- 1. DASHBOARD SUB-PANEL -->
+                    <div id="sales-sub-dashboard" class="sales-sub-panel active">
+                        <div class="sales-stats-grid">
+                            <div class="sales-stat-card">
+                                <div class="sales-stat-icon success">
+                                    <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                </div>
+                                <div class="sales-stat-info">
+                                    <span>Doanh thu (HĐ Hoàn tất)</span>
+                                    <h3 id="dash-stat-revenue">0 đ</h3>
+                                </div>
+                            </div>
+                            <div class="sales-stat-card">
+                                <div class="sales-stat-icon secondary">
+                                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                                </div>
+                                <div class="sales-stat-info">
+                                    <span>Ước lượng Lợi nhuận gộp</span>
+                                    <h3 id="dash-stat-profit">0 đ</h3>
+                                </div>
+                            </div>
+                            <div class="sales-stat-card">
+                                <div class="sales-stat-icon primary">
+                                    <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                                </div>
+                                <div class="sales-stat-info">
+                                    <span>Đơn hoàn tất / Tổng số đơn</span>
+                                    <h3 id="dash-stat-orders">0 / 0</h3>
+                                </div>
+                            </div>
+                            <div class="sales-stat-card">
+                                <div class="sales-stat-icon warning">
+                                    <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                </div>
+                                <div class="sales-stat-info">
+                                    <span>Sản phẩm sắp hết hàng (<=5)</span>
+                                    <h3 id="dash-stat-stock-alert">0 sản phẩm</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-actions">
+                            <h3>Đơn hàng mới tạo gần đây</h3>
+                            <button class="btn btn-primary" onclick="SalesApp.openOrderCreator()">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Tạo đơn hàng mới
+                            </button>
+                        </div>
+
+                        <div class="sales-table-wrapper">
+                            <table class="sales-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã Đơn hàng</th>
+                                        <th>Khách hàng</th>
+                                        <th>Thời gian</th>
+                                        <th>Tổng thanh toán</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dash-recent-orders-list">
+                                    <!-- Dynamic rows loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 2. PRODUCTS SUB-PANEL -->
+                    <div id="sales-sub-products" class="sales-sub-panel">
+                        <div class="section-actions">
+                            <div class="search-filter-group">
+                                <div class="sales-search-wrapper">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                    <input type="text" id="sales-prod-search" placeholder="Tìm sản phẩm theo tên, SKU...">
+                                </div>
+                                <div class="select-wrapper" style="width: 180px;">
+                                    <select id="sales-prod-filter-cat">
+                                        <option value="all">Tất cả danh mục</option>
+                                        <!-- Dynamic categories populated here -->
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="SalesApp.openProductModal()">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Thêm sản phẩm
+                            </button>
+                        </div>
+
+                        <div class="sales-table-wrapper">
+                            <table class="sales-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 110px;">Mã SKU</th>
+                                        <th>Tên sản phẩm</th>
+                                        <th>Danh mục</th>
+                                        <th>Giá vốn</th>
+                                        <th>Giá bán</th>
+                                        <th>Tồn kho</th>
+                                        <th>Trạng thái</th>
+                                        <th style="width: 90px;">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sales-products-list">
+                                    <!-- Dynamic product rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 3. CUSTOMERS SUB-PANEL -->
+                    <div id="sales-sub-customers" class="sales-sub-panel">
+                        <div class="section-actions">
+                            <div class="search-filter-group">
+                                <div class="sales-search-wrapper">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                    <input type="text" id="sales-cust-search" placeholder="Tìm khách hàng theo tên, số điện thoại...">
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="SalesApp.openCustomerModal()">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Thêm khách hàng
+                            </button>
+                        </div>
+
+                        <div class="sales-table-wrapper">
+                            <table class="sales-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tên khách hàng</th>
+                                        <th>Số điện thoại</th>
+                                        <th>Email</th>
+                                        <th>Địa chỉ</th>
+                                        <th>Đơn hàng</th>
+                                        <th>Doanh số mua</th>
+                                        <th style="width: 90px;">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sales-customers-list">
+                                    <!-- Dynamic customer rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 4. ORDERS SUB-PANEL -->
+                    <div id="sales-sub-orders" class="sales-sub-panel">
+                        <div class="section-actions">
+                            <div class="search-filter-group">
+                                <div class="sales-search-wrapper">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                    <input type="text" id="sales-order-search" placeholder="Tìm đơn hàng theo mã HĐ, tên KH...">
+                                </div>
+                                <div class="select-wrapper" style="width: 180px;">
+                                    <select id="sales-order-filter-status">
+                                        <option value="all">Tất cả trạng thái</option>
+                                        <option value="pending">Chờ thanh toán</option>
+                                        <option value="paid">Đã thanh toán</option>
+                                        <option value="shipped">Đang giao hàng</option>
+                                        <option value="completed">Đã hoàn thành</option>
+                                        <option value="cancelled">Đã hủy</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="SalesApp.openOrderCreator()">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Tạo đơn hàng mới
+                            </button>
+                        </div>
+
+                        <div class="sales-table-wrapper">
+                            <table class="sales-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 100px;">Mã đơn</th>
+                                        <th>Khách hàng</th>
+                                        <th>Ngày lập</th>
+                                        <th>Tổng cộng</th>
+                                        <th>Thanh toán</th>
+                                        <th>Trạng thái</th>
+                                        <th style="width: 150px;">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sales-orders-list">
+                                    <!-- Dynamic order rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 5. CONFIGURATION SUB-PANEL -->
+                    <div id="sales-sub-settings" class="sales-sub-panel">
+                        <form id="sales-settings-form">
+                            <div class="grid-2col">
+                                <!-- Store profile information -->
+                                <div class="editor-container" style="padding: 20px; background: rgba(255,255,255,0.01); border: 1px solid var(--panel-border); border-radius: 12px;">
+                                    <h3 style="margin-bottom: 20px; color: #ffffff;">Thông tin Cửa hàng</h3>
+                                    <div class="form-group" style="margin-bottom: 15px;">
+                                        <label>Tên cửa hàng / Thương hiệu</label>
+                                        <input type="text" id="sales-shop-name" required style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 15px;">
+                                        <label>Địa chỉ</label>
+                                        <input type="text" id="sales-shop-address" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                    </div>
+                                    <div class="form-grid" style="margin-bottom: 15px;">
+                                        <div class="form-group">
+                                            <label>Số điện thoại</label>
+                                            <input type="text" id="sales-shop-phone" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Email liên hệ</label>
+                                            <input type="email" id="sales-shop-email" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Website cửa hàng</label>
+                                        <input type="text" id="sales-shop-web" placeholder="Ví dụ: www.greytiger.com" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                    </div>
+                                </div>
+
+                                <!-- Payment Settings -->
+                                <div class="editor-container" style="padding: 20px; background: rgba(255,255,255,0.01); border: 1px solid var(--panel-border); border-radius: 12px;">
+                                    <h3 style="margin-bottom: 20px; color: #ffffff;">Thông tin Thanh toán & Hóa đơn</h3>
+                                    <div class="form-group" style="margin-bottom: 15px;">
+                                        <label>Ngân hàng nhận chuyển khoản</label>
+                                        <input type="text" id="sales-shop-bank" placeholder="Ví dụ: Vietcombank (VCB)" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                    </div>
+                                    <div class="form-grid" style="margin-bottom: 15px;">
+                                        <div class="form-group">
+                                            <label>Số tài khoản nhận</label>
+                                            <input type="text" id="sales-shop-account" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Tên chủ tài khoản ngân hàng</label>
+                                            <input type="text" id="sales-shop-owner" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                        </div>
+                                    </div>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label>Thuế suất mặc định (VAT %)</label>
+                                            <input type="number" id="sales-shop-tax" min="0" max="100" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Ký hiệu tiền tệ</label>
+                                            <input type="text" id="sales-shop-currency" value="đ" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+                                <button type="submit" class="btn btn-primary">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                                    Lưu cấu hình
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- MODALS DIALOGS -->
+
+            <!-- 1. Product Create/Edit Modal -->
+            <div class="sales-modal" id="modal-sales-product">
+                <div class="sales-modal-backdrop" onclick="SalesApp.closeProductModal()"></div>
+                <div class="sales-modal-content">
+                    <div class="sales-modal-header">
+                        <h3 id="sales-product-modal-title">Thêm sản phẩm mới</h3>
+                        <button type="button" class="sales-modal-close" onclick="SalesApp.closeProductModal()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+                    <form id="sales-prod-form">
+                        <div class="sales-modal-body">
+                            <input type="hidden" id="sales-prod-id">
+                            <div class="form-grid" style="margin-bottom: 16px;">
+                                <div class="form-group">
+                                    <label>Mã sản phẩm (SKU)</label>
+                                    <input type="text" id="sales-prod-sku" required style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Nhóm danh mục</label>
+                                    <input type="text" id="sales-prod-cat" placeholder="Ví dụ: Màn hình, CPU..." style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 16px;">
+                                <label>Tên sản phẩm</label>
+                                <input type="text" id="sales-prod-name" required placeholder="Tên hiển thị trên hóa đơn" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                            </div>
+                            <div class="form-grid" style="margin-bottom: 16px;">
+                                <div class="form-group">
+                                    <label>Giá vốn mua vào (VNĐ)</label>
+                                    <input type="number" id="sales-prod-cost" required min="0" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Giá bán ra (VNĐ)</label>
+                                    <input type="number" id="sales-prod-price" required min="0" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Số lượng tồn kho ban đầu</label>
+                                    <input type="number" id="sales-prod-qty" required min="0" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Trạng thái</label>
+                                    <div class="select-wrapper">
+                                        <select id="sales-prod-status" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff; height: 40px; appearance: none;">
+                                            <option value="active">Kinh doanh</option>
+                                            <option value="inactive">Ngừng bán</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sales-modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="SalesApp.closeProductModal()">Hủy bỏ</button>
+                            <button type="submit" class="btn btn-primary">Lưu sản phẩm</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 2. Customer Create/Edit Modal -->
+            <div class="sales-modal" id="modal-sales-customer">
+                <div class="sales-modal-backdrop" onclick="SalesApp.closeCustomerModal()"></div>
+                <div class="sales-modal-content">
+                    <div class="sales-modal-header">
+                        <h3 id="sales-customer-modal-title">Thêm khách hàng mới</h3>
+                        <button type="button" class="sales-modal-close" onclick="SalesApp.closeCustomerModal()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+                    <form id="sales-cust-form">
+                        <div class="sales-modal-body">
+                            <input type="hidden" id="sales-cust-id">
+                            <div class="form-grid" style="margin-bottom: 16px;">
+                                <div class="form-group">
+                                    <label>Họ và tên</label>
+                                    <input type="text" id="sales-cust-name" required placeholder="Nguyễn Văn A" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Số điện thoại</label>
+                                    <input type="text" id="sales-cust-phone" required placeholder="09xxxxxxxx" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 16px;">
+                                <label>Địa chỉ Email</label>
+                                <input type="email" id="sales-cust-email" placeholder="example@gmail.com" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                            </div>
+                            <div class="form-group">
+                                <label>Địa chỉ thường trú / Nhận hàng</label>
+                                <input type="text" id="sales-cust-address" placeholder="Số nhà, Tên đường, Quận/Huyện..." style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                            </div>
+                        </div>
+                        <div class="sales-modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="SalesApp.closeCustomerModal()">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Lưu khách hàng</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 3. Invoice Detail View Modal -->
+            <div class="sales-modal" id="modal-sales-invoice-preview">
+                <div class="sales-modal-backdrop" onclick="SalesApp.closeInvoiceModal()"></div>
+                <div class="sales-modal-content" style="max-width: 800px;">
+                    <div class="sales-modal-header">
+                        <h3>Xem hóa đơn bán hàng</h3>
+                        <button type="button" class="sales-modal-close" onclick="SalesApp.closeInvoiceModal()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+                    <div class="sales-modal-body" style="padding: 0; background: #eaeaea;">
+                        <div id="invoice-print-area">
+                            <!-- Injected Invoice HTML content for visual and print rendering -->
+                        </div>
+                    </div>
+                    <div class="sales-modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="SalesApp.closeInvoiceModal()">Đóng lại</button>
+                        <button type="button" class="btn btn-primary" id="btn-print-sales-invoice">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                            In hóa đơn (PDF)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Dual Pane Order Creator Modal -->
+            <div class="sales-modal" id="modal-sales-order-creator">
+                <div class="sales-modal-backdrop" onclick="SalesApp.closeOrderCreator()"></div>
+                <div class="sales-modal-content" style="max-width: 1100px;">
+                    <div class="sales-modal-header">
+                        <h3>Tạo đơn hàng mới</h3>
+                        <button type="button" class="sales-modal-close" onclick="SalesApp.closeOrderCreator()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+                    <div class="sales-modal-body">
+                        <div class="order-creator-container">
+                            <!-- Left pane: Catalog items select -->
+                            <div class="order-selector-pane">
+                                <div class="sales-search-wrapper">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                    <input type="text" id="order-creator-prod-search" placeholder="Gõ tên hoặc SKU sản phẩm..." oninput="SalesApp.renderOrderCreatorProducts()">
+                                </div>
+                                <h4 style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">Danh sách sản phẩm kinh doanh</h4>
+                                <div class="order-items-scroll" id="order-creator-products-grid">
+                                    <!-- Dynamic product catalog cards -->
+                                </div>
+                            </div>
+
+                            <!-- Right pane: Cart checkouts -->
+                            <div class="order-cart-pane">
+                                <h3 style="color: #ffffff; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: space-between;">
+                                    <span>Giỏ hàng chi tiết</span>
+                                    <span style="font-size: 12px; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 10px;">Thêm từ cột bên trái</span>
+                                </h3>
+                                
+                                <div class="cart-items-list" id="order-cart-items-list">
+                                    <!-- Dynamic added products here -->
+                                </div>
+
+                                <!-- Calculation Checkout Info -->
+                                <div class="cart-summary-section">
+                                    <div class="form-group" style="margin-bottom: 4px;">
+                                        <label style="font-size: 12px;">Khách hàng mua hàng:</label>
+                                        <div class="customer-select-row">
+                                            <div class="select-wrapper" style="flex: 1;">
+                                                <select id="order-select-customer">
+                                                    <!-- Loaded customers dropdown list -->
+                                                </select>
+                                            </div>
+                                            <button type="button" class="btn btn-secondary" onclick="SalesApp.openCustomerModal()" style="padding: 10px;" title="Tạo nhanh khách hàng mới">
+                                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-grid" style="margin-bottom: 4px; gap: 8px;">
+                                        <div class="form-group">
+                                            <label style="font-size: 11px;">Giảm giá chiếc khấu:</label>
+                                            <div class="summary-input-group">
+                                                <input type="number" id="order-discount" value="0" min="0">
+                                                <div class="select-wrapper" style="width: 70px; flex: none;">
+                                                    <select id="order-discount-type">
+                                                        <option value="value">VNĐ</option>
+                                                        <option value="percent">%</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="font-size: 11px;">Hình thức thanh toán:</label>
+                                            <div class="select-wrapper">
+                                                <select id="order-payment-method">
+                                                    <option value="Tiền mặt">Tiền mặt</option>
+                                                    <option value="Chuyển khoản" selected>Chuyển khoản</option>
+                                                    <option value="Thẻ tín dụng">Thẻ tín dụng (POS)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group" style="margin-bottom: 8px;">
+                                        <label style="font-size: 11px;">Ghi chú giao dịch:</label>
+                                        <input type="text" id="order-notes" placeholder="VD: Giao giờ hành chính, Khách quen..." style="width: 100%; background: rgba(255,255,255,0.02); border: 1px solid var(--panel-border); border-radius: 8px; padding: 6px 10px; color: #fff; font-size: 12px;">
+                                    </div>
+
+                                    <div class="summary-row">
+                                        <span>Cộng tiền hàng:</span>
+                                        <span id="order-calc-subtotal">0 đ</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Giảm giá trừ thẳng:</span>
+                                        <span id="order-calc-discount" style="color: var(--color-danger);">0 đ</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span>Thuế VAT:</span>
+                                        <span id="order-calc-tax">0 đ (0%)</span>
+                                    </div>
+                                    <div class="summary-row total-row">
+                                        <span><strong>TỔNG THANH TOÁN:</strong></span>
+                                        <span id="order-calc-total"><strong>0 đ</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sales-modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="SalesApp.closeOrderCreator()">Đóng / Hủy bỏ</button>
+                        <button type="button" class="btn btn-primary" id="btn-submit-order">Xác nhận tạo đơn</button>
+                    </div>
+                </div>
+            </div>
             
         </main>
     </div>
@@ -715,5 +1278,6 @@
 
     <!-- Core Business Logic Script -->
     <script src="app.js?v=1.0.1"></script>
+    <script src="sales.js?v=1.0.1"></script>
 </body>
 </html>
