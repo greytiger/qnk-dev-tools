@@ -828,10 +828,16 @@
                                     </select>
                                 </div>
                             </div>
-                            <button class="btn btn-primary" onclick="SalesApp.openProductModal()">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                Thêm sản phẩm
-                            </button>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-secondary" onclick="SalesApp.openCategoryManager()" title="Quản lý các danh mục hàng hóa">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right: 6px;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                                    Danh mục hàng
+                                </button>
+                                <button class="btn btn-primary" onclick="SalesApp.openProductModal()">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                    Thêm sản phẩm
+                                </button>
+                            </div>
                         </div>
 
                         <div class="sales-table-wrapper">
@@ -1061,7 +1067,16 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Nhóm danh mục</label>
-                                    <input type="text" id="sales-prod-cat" placeholder="Ví dụ: Màn hình, CPU..." style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                                    <div style="display: flex; gap: 8px; align-items: center;">
+                                        <div class="select-wrapper" style="flex: 1;">
+                                            <select id="sales-prod-cat" style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff; height: 40px; appearance: none; -moz-appearance: none;">
+                                                <!-- Populated dynamically -->
+                                            </select>
+                                        </div>
+                                        <button type="button" class="btn btn-secondary" onclick="SalesApp.quickAddCategory()" style="padding: 10px; height: 40px;" title="Thêm danh mục mới inline">
+                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="form-group" style="margin-bottom: 16px;">
@@ -1271,6 +1286,47 @@
                     <div class="sales-modal-footer">
                         <button type="button" class="btn btn-secondary" onclick="SalesApp.closeOrderCreator()">Đóng / Hủy bỏ</button>
                         <button type="button" class="btn btn-primary" id="btn-submit-order">Xác nhận tạo đơn</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Category Manager Modal -->
+            <div class="sales-modal" id="modal-sales-categories">
+                <div class="sales-modal-backdrop" onclick="SalesApp.closeCategoryManager()"></div>
+                <div class="sales-modal-content" style="max-width: 500px;">
+                    <div class="sales-modal-header">
+                        <h3>Quản lý danh mục hàng hóa</h3>
+                        <button type="button" class="sales-modal-close" onclick="SalesApp.closeCategoryManager()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+                    <div class="sales-modal-body">
+                        <!-- Add Category Form -->
+                        <div class="form-group" style="margin-bottom: 20px; display: flex; gap: 8px; align-items: flex-end;">
+                            <div style="flex: 1;">
+                                <label>Tên danh mục mới</label>
+                                <input type="text" id="sales-new-cat-input" placeholder="Ví dụ: Thiết bị thông minh..." style="width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; color: #fff;">
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="SalesApp.addCategoryFromManager()" style="height: 40px;">Thêm</button>
+                        </div>
+                        
+                        <h4 style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Danh mục hiện có</h4>
+                        <div style="max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.15); border-radius: 8px; border: 1px solid var(--panel-border);">
+                            <table class="sales-table" style="font-size: 13px;">
+                                <thead>
+                                    <tr>
+                                        <th>Tên danh mục</th>
+                                        <th style="width: 100px; text-align: right; padding-right: 18px;">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sales-category-manager-list">
+                                    <!-- Dynamic category rows with edit/delete actions -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="sales-modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="SalesApp.closeCategoryManager()">Đóng</button>
                     </div>
                 </div>
             </div>
