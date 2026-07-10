@@ -202,6 +202,57 @@
         }
     }
 
+    // Clear all database data with a math challenge confirmation
+    function clearDatabase() {
+        // Generate a random math addition or subtraction within 100
+        const isAddition = Math.random() > 0.5;
+        let num1, num2, question, correctAnswer;
+        
+        if (isAddition) {
+            num1 = Math.floor(Math.random() * 50) + 1; // 1 to 50
+            num2 = Math.floor(Math.random() * 50) + 1; // 1 to 50
+            correctAnswer = num1 + num2;
+            question = `${num1} + ${num2} = ?`;
+        } else {
+            num1 = Math.floor(Math.random() * 90) + 10; // 10 to 99
+            num2 = Math.floor(Math.random() * (num1 - 5)) + 1; // positive result
+            correctAnswer = num1 - num2;
+            question = `${num1} - ${num2} = ?`;
+        }
+
+        const confirmMsg = "CẢNH BÁO NGUY HIỂM:\nHành động này sẽ XÓA SẠCH HOÀN TOÀN:\n- Tất cả sản phẩm\n- Tất cả khách hàng\n- Tất cả hóa đơn/đơn hàng\n- Đặt lại cấu hình cửa hàng về mặc định\n\nDữ liệu sẽ bị xóa vĩnh viễn khỏi LocalStorage!\n\nĐể xác nhận xóa, vui lòng thực hiện phép tính sau:\n";
+        
+        const userInput = prompt(confirmMsg + question);
+        if (userInput === null) {
+            return; // Cancelled
+        }
+
+        if (parseInt(userInput.trim()) === correctAnswer) {
+            salesDb = {
+                storeInfo: {
+                    name: "Cửa hàng mới",
+                    address: "",
+                    phone: "",
+                    email: "",
+                    website: "",
+                    bankName: "",
+                    bankAccount: "",
+                    bankOwner: "",
+                    taxRate: 0,
+                    currency: "đ"
+                },
+                products: [],
+                customers: [],
+                orders: []
+            };
+            saveData();
+            renderAll();
+            showToast("Đã xóa sạch toàn bộ dữ liệu thành công!");
+        } else {
+            alert("Kết quả tính toán không chính xác! Thao tác xóa dữ liệu bị hủy bỏ.");
+        }
+    }
+
     // ----------------------------------------------------
     // RENDERING & SUB-TABS INTERACTIVE CONTROL
     // ----------------------------------------------------
@@ -241,6 +292,7 @@
             fileInput.click();
         });
         document.getElementById("btn-reset-sales-db")?.addEventListener("click", resetDatabase);
+        document.getElementById("btn-clear-sales-db")?.addEventListener("click", clearDatabase);
 
         // Product search and filter
         document.getElementById("sales-prod-search")?.addEventListener("input", renderProducts);
