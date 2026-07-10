@@ -3,6 +3,12 @@
 (function() {
     // Default Template/Mock Data
     const DEFAULT_DB = {
+        categories: [
+            "Phụ kiện máy tính",
+            "Màn hình",
+            "Thiết bị âm thanh",
+            "Phụ kiện điện thoại"
+        ],
         storeInfo: {
             name: "GreyTiger Suite Store",
             address: "123 Đường Láng, Đống Đa, Hà Nội",
@@ -106,6 +112,12 @@
                 if (!salesDb.customers) salesDb.customers = [];
                 if (!salesDb.orders) salesDb.orders = [];
                 if (!salesDb.storeInfo) salesDb.storeInfo = Object.assign({}, DEFAULT_DB.storeInfo);
+                if (!salesDb.categories) {
+                    salesDb.categories = Array.from(new Set(salesDb.products.map(p => p.category).filter(Boolean)));
+                    if (salesDb.categories.length === 0) {
+                        salesDb.categories = ["Phụ kiện máy tính", "Màn hình", "Thiết bị âm thanh", "Phụ kiện điện thoại"];
+                    }
+                }
             } catch (e) {
                 console.error("Lỗi parse dữ liệu bán hàng. Nạp dữ liệu mặc định.", e);
                 salesDb = JSON.parse(JSON.stringify(DEFAULT_DB));
@@ -333,6 +345,7 @@
 
     function renderAll() {
         updateSyncStatus();
+        populateCategoryDropdowns();
         renderDashboard();
         renderProducts();
         renderCustomers();
@@ -472,24 +485,6 @@
         const searchVal = (document.getElementById("sales-prod-search")?.value || "").toLowerCase().trim();
         const catVal = document.getElementById("sales-prod-filter-cat")?.value || "all";
 
-        // Collect distinct categories to populate filter dynamically
-        const categories = new Set();
-        salesDb.products.forEach(p => {
-            if (p.category) categories.add(p.category);
-        });
-
-        // Populate Category Filter dropdown
-        const catSelect = document.getElementById("sales-prod-filter-cat");
-        if (catSelect && catSelect.children.length <= 1) {
-            // Keep first option "Tất cả danh mục" and append
-            categories.forEach(cat => {
-                const opt = document.createElement("option");
-                opt.value = cat;
-                opt.textContent = cat;
-                catSelect.appendChild(opt);
-            });
-        }
-
         // Filtering
         const filtered = salesDb.products.filter(p => {
             const matchesSearch = p.name.toLowerCase().includes(searchVal) || p.sku.toLowerCase().includes(searchVal);
@@ -557,6 +552,7 @@
                 document.getElementById("sales-prod-id").value = p.id;
                 document.getElementById("sales-prod-sku").value = p.sku;
                 document.getElementById("sales-prod-name").value = p.name;
+                populateCategoryDropdowns();
                 document.getElementById("sales-prod-cat").value = p.category;
                 document.getElementById("sales-prod-cost").value = p.cost;
                 document.getElementById("sales-prod-price").value = p.price;
@@ -565,6 +561,7 @@
             }
         } else {
             titleEl.textContent = "Thêm sản phẩm mới";
+            populateCategoryDropdowns();
             // Autogenerate SKU
             const newIndex = salesDb.products.length + 1;
             document.getElementById("sales-prod-sku").value = "SP-" + String(newIndex).padStart(3, '0');
@@ -1515,8 +1512,182 @@
         removeFromCart,
         viewOrderInvoice,
         closeInvoiceModal,
-        changeOrderStatus
+        changeOrderStatus,
+        openCategoryManager,
+        closeCategoryManager,
+        quickAddCategory,
+        addCategoryFromManager,
+        deleteCategory,
+        renameCategory
     };
+
+    // Category Management business logic helpers
+    function populateCategoryDropdowns() {
+        const prodCatSelect = document.getElementById("sales-prod-cat");
+        if (prodCatSelect) {
+            prodCatSelect.innerHTML = "";
+            salesDb.categories.forEach(cat => {
+                const opt = document.createElement("option");
+                opt.value = cat;
+                opt.textContent = cat;
+                prodCatSelect.appendChild(opt);
+            });
+        }
+
+        const filterCatSelect = document.getElementById("sales-prod-filter-cat");
+        if (filterCatSelect) {
+            const currentFilterVal = filterCatSelect.value || "all";
+            filterCatSelect.innerHTML = '<option value="all">Tất cả danh mục</option>';
+            salesDb.categories.forEach(cat => {
+                const opt = document.createElement("option");
+                opt.value = cat;
+                opt.textContent = cat;
+                filterCatSelect.appendChild(opt);
+            });
+            filterCatSelect.value = currentFilterVal;
+        }
+    }
+
+    function quickAddCategory() {
+        const catName = prompt("Nhập tên danh mục sản phẩm mới:");
+        if (!catName) return;
+        
+        const trimmed = catName.trim();
+        if (!trimmed) return;
+
+        const duplicate = salesDb.categories.find(c => c.toLowerCase() === trimmed.toLowerCase());
+        if (duplicate) {
+            const select = document.getElementById("sales-prod-cat");
+            if (select) select.value = duplicate;
+            return;
+        }
+
+        salesDb.categories.push(trimmed);
+        saveData();
+        populateCategoryDropdowns();
+        
+        const select = document.getElementById("sales-prod-cat");
+        if (select) select.value = trimmed;
+        
+        showToast(`Đã thêm danh mục mới: '${trimmed}'`);
+    }
+
+    function openCategoryManager() {
+        const modal = document.getElementById("modal-sales-categories");
+        if (!modal) return;
+
+        document.getElementById("sales-new-cat-input").value = "";
+        renderCategoryManagerList();
+        modal.classList.add("active");
+    }
+
+    function closeCategoryManager() {
+        document.getElementById("modal-sales-categories")?.classList.remove("active");
+    }
+
+    function renderCategoryManagerList() {
+        const list = document.getElementById("sales-category-manager-list");
+        if (!list) return;
+
+        list.innerHTML = "";
+
+        if (salesDb.categories.length === 0) {
+            list.innerHTML = `<tr><td colspan="2" style="text-align: center; color: var(--text-dark); padding: 15px 0;">Chưa có danh mục nào.</td></tr>`;
+            return;
+        }
+
+        salesDb.categories.forEach(cat => {
+            const tr = document.createElement("tr");
+            const count = salesDb.products.filter(p => p.category === cat).length;
+
+            tr.innerHTML = `
+                <td><strong>${cat}</strong> <span style="font-size: 11px; color: var(--text-dark); margin-left: 8px;">(${count} sản phẩm)</span></td>
+                <td class="actions-cell" style="justify-content: flex-end; padding-right: 18px;">
+                    <button type="button" class="btn-icon edit" onclick="SalesApp.renameCategory('${cat.replace(/'/g, "\\'")}')" title="Đổi tên">
+                        <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"/></svg>
+                    </button>
+                    <button type="button" class="btn-icon delete" onclick="SalesApp.deleteCategory('${cat.replace(/'/g, "\\'")}')" title="Xóa">
+                        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                </td>
+            `;
+            list.appendChild(tr);
+        });
+    }
+
+    function addCategoryFromManager() {
+        const input = document.getElementById("sales-new-cat-input");
+        if (!input) return;
+
+        const catName = input.value.trim();
+        if (!catName) {
+            alert("Vui lòng nhập tên danh mục.");
+            return;
+        }
+
+        const duplicate = salesDb.categories.find(c => c.toLowerCase() === catName.toLowerCase());
+        if (duplicate) {
+            alert(`Danh mục '${duplicate}' đã tồn tại.`);
+            return;
+        }
+
+        salesDb.categories.push(catName);
+        saveData();
+        input.value = "";
+        renderCategoryManagerList();
+        populateCategoryDropdowns();
+        showToast(`Đã thêm danh mục '${catName}'`);
+    }
+
+    function deleteCategory(catName) {
+        const count = salesDb.products.filter(p => p.category === catName).length;
+        if (count > 0) {
+            alert(`Không thể xóa danh mục này do đang có ${count} sản phẩm thuộc danh mục. Vui lòng cập nhật sản phẩm sang danh mục khác trước.`);
+            return;
+        }
+
+        if (confirm(`Bạn chắc chắn muốn xóa danh mục '${catName}'?`)) {
+            salesDb.categories = salesDb.categories.filter(c => c !== catName);
+            saveData();
+            renderCategoryManagerList();
+            populateCategoryDropdowns();
+            renderProducts();
+            showToast(`Đã xóa danh mục '${catName}'`);
+        }
+    }
+
+    function renameCategory(oldName) {
+        const newName = prompt(`Nhập tên mới cho danh mục '${oldName}':`, oldName);
+        if (!newName) return;
+
+        const trimmed = newName.trim();
+        if (!trimmed || trimmed === oldName) return;
+
+        const duplicate = salesDb.categories.find(c => c.toLowerCase() === trimmed.toLowerCase() && c !== oldName);
+        if (duplicate) {
+            alert(`Tên danh mục '${trimmed}' đã tồn tại.`);
+            return;
+        }
+
+        const idx = salesDb.categories.indexOf(oldName);
+        if (idx !== -1) {
+            salesDb.categories[idx] = trimmed;
+        }
+
+        let updatedCount = 0;
+        salesDb.products.forEach(p => {
+            if (p.category === oldName) {
+                p.category = trimmed;
+                updatedCount++;
+            }
+        });
+
+        saveData();
+        renderCategoryManagerList();
+        populateCategoryDropdowns();
+        renderProducts();
+        showToast(`Đã đổi tên danh mục thành '${trimmed}' (${updatedCount} sản phẩm đã được cập nhật)`);
+    }
 
     // Run init on DOM Ready (safeguard)
     if (document.readyState === "loading") {
