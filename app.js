@@ -844,7 +844,9 @@ const menuKeywords = {
     'cron-tab': ['scheduled', 'cron', 'task', 'timer', 'expression', 'job', 'spring', 'định kỳ', 'lịch trình'],
     'codec-tab': ['jwt', 'decode', 'base64', 'encrypt', 'authorization', 'basic', 'auth', 'security', 'mã hóa', 'giải mã', 'bảo mật'],
     'epoch-tab': ['epoch', 'timestamp', 'time', 'date', 'millisecond', 'second', 'hệ thống', 'local', 'utc', 'thời gian', 'mili', 'giây'],
-    'markdown-tab': ['markdown', 'md', 'docx', 'pdf', 'word', 'convert', 'document', 'chuyển đổi', 'tài liệu', 'văn bản']
+    'markdown-tab': ['markdown', 'md', 'docx', 'pdf', 'word', 'convert', 'document', 'chuyển đổi', 'tài liệu', 'văn bản'],
+    'sales-tab': ['sales', 'bán hàng', 'quản lý', 'đơn hàng', 'khách hàng', 'sản phẩm', 'order', 'pos', 'cửa hàng', 'doanh thu'],
+    'quiz-tab': ['quiz', 'ttdt', 'trắc nghiệm', 'ôn luyện', 'ôn thi', 'câu hỏi', 'đề thi', 'thanh toán điện tử', 'napas', 'kiểm tra']
 };
 
 function filterSidebarMenu() {
