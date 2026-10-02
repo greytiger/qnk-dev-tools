@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=1.0.3">
     <link rel="stylesheet" href="sales.css?v=1.0.3">
-    <link rel="stylesheet" href="quiz.css?v=1.0.3">
+    <link rel="stylesheet" href="quiz.css?v=1.0.5">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2.2'%3E%3Cpolygon points='12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2'/%3E%3Cpolyline points='2 8.5 12 15 22 8.5'/%3E%3Cline x1='12' y1='15' x2='12' y2='22'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -1345,163 +1345,250 @@
                             <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="m9 9.5 2 2 4-4"/></svg>
                             <div>
                                 <h2>Ôn luyện TTĐT 2026</h2>
-                                <div class="panel-description">Hệ thống ôn luyện trắc nghiệm 500 câu hỏi thanh toán điện tử chia thành 10 đề thi chuẩn. Chạy hoàn toàn cục bộ và tự động lưu tiến độ.</div>
+                                <div class="panel-description">Hệ thống ôn luyện trắc nghiệm 502 câu hỏi từ 12 sheet P01–P39 chia thành 10 đề thi chuẩn. Chạy hoàn toàn cục bộ và tự động lưu tiến độ.</div>
                             </div>
+                        </div>
+                        <div class="panel-actions" id="quiz-header-actions" style="display: none;">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="QuizApp.logout()" title="Đăng xuất / Khóa truy cập" style="display: inline-flex; align-items: center; gap: 6px;">
+                                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                                Khóa / Đăng xuất
+                            </button>
                         </div>
                     </div>
 
-                    <!-- 1. HOME VIEW (Tests Overview & Summary) -->
-                    <div id="quiz-home-view" class="quiz-section">
-                        <!-- Stats Grid -->
-                        <div class="quiz-stats-grid">
-                            <div class="quiz-stat-card">
-                                <span class="quiz-stat-label">Số đề thi</span>
-                                <strong class="quiz-stat-value" id="quiz-stat-tests">10</strong>
-                                <span class="quiz-stat-sub">Mỗi đề 50 câu</span>
+                    <!-- 0. AUTHENTICATION GATE VIEW -->
+                    <div id="quiz-auth-gate" class="quiz-auth-gate">
+                        <div class="quiz-auth-card">
+                            <div class="quiz-auth-icon">
+                                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
                             </div>
-                            <div class="quiz-stat-card">
-                                <span class="quiz-stat-label">Tổng câu hỏi</span>
-                                <strong class="quiz-stat-value" id="quiz-stat-total">500</strong>
-                                <span class="quiz-stat-sub">Không trùng lặp</span>
-                            </div>
-                            <div class="quiz-stat-card">
-                                <span class="quiz-stat-label">Đã hoàn thành</span>
-                                <strong class="quiz-stat-value" id="quiz-stat-completed">0/10</strong>
-                                <span class="quiz-stat-sub" id="quiz-stat-avg-score">Chưa có điểm</span>
-                            </div>
-                            <div class="quiz-stat-card quiz-stat-highlight">
-                                <span class="quiz-stat-label">Câu sai đang có</span>
-                                <strong class="quiz-stat-value" id="quiz-wrong-count">0</strong>
-                                <span class="quiz-stat-sub">Cần ôn luyện lại</span>
-                            </div>
-                        </div>
-
-                        <!-- Actions Toolbar -->
-                        <div class="quiz-actions-toolbar">
-                            <div class="quiz-actions-left">
-                                <button id="quiz-btn-wrong-start" class="btn btn-danger" disabled>
-                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                                    Ôn lại toàn bộ câu sai (<span id="quiz-btn-wrong-num">0</span>)
+                            <h3 class="quiz-auth-title">Xác thực quyền truy cập</h3>
+                            <p class="quiz-auth-desc">Vui lòng nhập tài khoản và mật khẩu để mở khóa phần ôn luyện trắc nghiệm TTĐT.</p>
+                            
+                            <form id="quiz-auth-form" class="quiz-auth-form" onsubmit="event.preventDefault(); QuizApp.handleAuthSubmit();">
+                                <div id="quiz-auth-error" class="quiz-auth-error" style="display: none;"></div>
+                                <div class="quiz-auth-form-group">
+                                    <label for="quiz-auth-user">Tên đăng nhập</label>
+                                    <input type="text" id="quiz-auth-user" class="quiz-auth-input" placeholder="Nhập tên đăng nhập" autocomplete="username" required>
+                                </div>
+                                <div class="quiz-auth-form-group">
+                                    <label for="quiz-auth-pass">Mật khẩu</label>
+                                    <input type="password" id="quiz-auth-pass" class="quiz-auth-input" placeholder="Nhập mật khẩu" autocomplete="current-password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary quiz-auth-btn">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Mở khóa truy cập
                                 </button>
-                            </div>
-                            <div class="quiz-actions-right">
-                                <button id="quiz-btn-reset" class="btn btn-secondary">
-                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                                    Xóa kết quả đã lưu
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- 10 Tests Grid -->
-                        <div id="quiz-tests-grid" class="quiz-tests-grid">
-                            <!-- Dynamic test cards rendered by quiz.js -->
+                            </form>
                         </div>
                     </div>
 
-                    <!-- 2. QUIZ TAKING VIEW (PLAYER) -->
-                    <div id="quiz-play-view" class="quiz-section quiz-hidden">
-                        <div class="quiz-player-card">
-                            <div class="quiz-player-top">
-                                <div class="quiz-player-breadcrumbs">
-                                    <button type="button" class="btn btn-secondary btn-sm" onclick="QuizApp.confirmExit()" title="Về danh sách đề">
-                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-                                        Danh sách đề
+                    <!-- AUTHENTICATED CONTENT WRAPPER -->
+                    <div id="quiz-authenticated-content" style="display: none;">
+                        <!-- 1. HOME VIEW (Tests Overview & Summary) -->
+                        <div id="quiz-home-view" class="quiz-section">
+                            <!-- Stats Grid -->
+                            <div class="quiz-stats-grid">
+                                <div class="quiz-stat-card">
+                                    <span class="quiz-stat-label">Số đề thi</span>
+                                    <strong class="quiz-stat-value" id="quiz-stat-tests">10</strong>
+                                    <span class="quiz-stat-sub">9 đề 50, 1 đề 52</span>
+                                </div>
+                                <div class="quiz-stat-card">
+                                    <span class="quiz-stat-label">Tổng số câu</span>
+                                    <strong class="quiz-stat-value" id="quiz-stat-total">502</strong>
+                                    <span class="quiz-stat-sub">12 sheet P01–P39</span>
+                                </div>
+                                <div class="quiz-stat-card quiz-stat-highlight">
+                                    <span class="quiz-stat-label">Câu sai đang chờ ôn</span>
+                                    <strong class="quiz-stat-value" id="quiz-wrong-count" style="color: #f87171;">0</strong>
+                                    <span class="quiz-stat-sub">Đúng sẽ được gỡ</span>
+                                </div>
+                                <div class="quiz-stat-card" style="border-color: rgba(245, 158, 11, 0.3);">
+                                    <span class="quiz-stat-label">Các câu đã từng sai</span>
+                                    <strong class="quiz-stat-value" id="quiz-ever-count" style="color: #fbbf24;">0</strong>
+                                    <span class="quiz-stat-sub">Lưu vết cố định</span>
+                                </div>
+                            </div>
+
+                            <!-- Ôn câu sai -->
+                            <div class="quiz-block-header">
+                                <div class="quiz-block-title">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                    Ôn câu sai
+                                </div>
+                            </div>
+                            <div class="quiz-boxes-grid">
+                                <div class="quiz-box quiz-box-red">
+                                    <h3>Ôn lại toàn bộ câu sai</h3>
+                                    <p>Làm đúng câu nào thì câu đó được gỡ khỏi danh sách.</p>
+                                    <button id="quiz-btn-wrong-start" class="btn btn-danger" disabled>
+                                        Ôn lại (<span id="quiz-btn-wrong-num">0</span> câu)
                                     </button>
-                                    <span style="color: var(--text-dark);">/</span>
-                                    <span id="quiz-player-title" style="font-weight: 600; color: var(--text-main);">Đề 1</span>
-                                    <span style="color: var(--text-dark);">•</span>
-                                    <span style="font-size: 14px; color: var(--text-muted);">Câu <strong id="quiz-player-current" style="color: #fff;">1</strong>/<strong id="quiz-player-total">50</strong></span>
                                 </div>
-                                <div class="quiz-player-score-badge">
-                                    Điểm: <strong id="quiz-player-score">0</strong>
+                                <div class="quiz-box quiz-box-amber">
+                                    <h3>Các câu đã từng sai</h3>
+                                    <p>Danh sách cố định: mọi câu từng làm sai đều được giữ lại, không bao giờ bị xoá.</p>
+                                    <button id="quiz-btn-ever-start" class="btn btn-warning" disabled>
+                                        Ôn lại (<span id="quiz-btn-ever-num">0</span> câu)
+                                    </button>
                                 </div>
                             </div>
 
-                            <!-- Progress Track -->
-                            <div class="quiz-progress-track">
-                                <div id="quiz-progress-fill" class="quiz-progress-fill"></div>
+                            <!-- Ôn theo cấp độ -->
+                            <div class="quiz-block-header">
+                                <div class="quiz-block-title">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    Ôn theo cấp độ
+                                </div>
+                            </div>
+                            <div id="quiz-levels-grid" class="quiz-levels-grid">
+                                <!-- Dynamic levels 1..4 rendered by quiz.js -->
                             </div>
 
-                            <!-- Question Metadata -->
-                            <div class="quiz-question-meta">
-                                <span id="quiz-question-code" class="quiz-badge-id">P01</span>
-                                <span class="separator">•</span>
-                                <span id="quiz-question-level">Cấp độ 1</span>
-                                <span class="separator">•</span>
-                                <span id="quiz-question-cat">Nghiệp vụ thanh toán</span>
+                            <!-- 10 Tests Header & Grid -->
+                            <div class="quiz-block-header">
+                                <div class="quiz-block-title">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    Đề thi chuẩn (10 đề)
+                                </div>
+                                <div class="row" style="gap: 8px;">
+                                    <button id="quiz-btn-reset" class="btn btn-secondary btn-sm" title="Xoá kết quả đề và danh sách câu sai đang chờ">
+                                        Xóa kết quả đề & câu sai chờ ôn
+                                    </button>
+                                    <button id="quiz-btn-reset-all" class="btn btn-secondary btn-sm" style="color: #f87171; border-color: rgba(239, 68, 68, 0.3);" title="Xoá toàn bộ kể cả câu đã từng sai">
+                                        Xóa toàn bộ dữ liệu
+                                    </button>
+                                </div>
                             </div>
-
-                            <!-- Question Content -->
-                            <div id="quiz-question-text" class="quiz-question-text">
-                                Đang tải nội dung câu hỏi...
-                            </div>
-
-                            <!-- Answer Options List -->
-                            <div id="quiz-answers-box" class="quiz-answers-list">
-                                <!-- Dynamic answers populated by quiz.js -->
-                            </div>
-
-                            <!-- Feedback Banner -->
-                            <div id="quiz-feedback" class="quiz-feedback-box quiz-hidden"></div>
-
-                            <!-- Player Bottom Actions -->
-                            <div class="quiz-player-bottom">
-                                <button type="button" class="btn btn-secondary" onclick="QuizApp.confirmExit()">
-                                    Thoát bài thi
-                                </button>
-                                <button type="button" class="btn btn-primary" id="quiz-btn-next" onclick="QuizApp.nextQuestion()" disabled>
-                                    Câu tiếp theo
-                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-                                </button>
+                            <div id="quiz-tests-grid" class="quiz-tests-grid">
+                                <!-- Dynamic test cards rendered by quiz.js -->
                             </div>
                         </div>
-                    </div>
 
-                    <!-- 3. RESULT VIEW -->
-                    <div id="quiz-result-view" class="quiz-section quiz-hidden">
-                        <div class="quiz-result-card">
-                            <div class="quiz-result-icon-wrapper">
-                                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
-                            </div>
+                        <!-- 2. QUIZ TAKING VIEW (PLAYER) -->
+                        <div id="quiz-play-view" class="quiz-section quiz-hidden">
+                            <div class="quiz-player-card">
+                                <div class="quiz-player-top">
+                                    <div class="quiz-player-breadcrumbs">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="QuizApp.confirmExit()" title="Về danh sách đề">
+                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                                            Danh sách đề
+                                        </button>
+                                        <span style="color: var(--text-dark);">/</span>
+                                        <span id="quiz-player-title" style="font-weight: 600; color: var(--text-main);">Đề 1</span>
+                                        <span style="color: var(--text-dark);">•</span>
+                                        <span style="font-size: 14px; color: var(--text-muted);">Câu <strong id="quiz-player-current" style="color: #fff;">1</strong>/<strong id="quiz-player-total">50</strong></span>
+                                    </div>
+                                    <div class="quiz-player-score-badge">
+                                        Điểm: <strong id="quiz-player-score">0</strong>
+                                    </div>
+                                </div>
 
-                            <div class="quiz-result-score-display">
-                                <h3 id="quiz-res-title">Hoàn thành bài thi!</h3>
-                                <div class="quiz-result-score-number">
-                                    <span id="quiz-res-score">0</span><span> / </span><span id="quiz-res-total">50</span>
+                                <!-- Progress Track -->
+                                <div class="quiz-progress-track">
+                                    <div id="quiz-progress-fill" class="quiz-progress-fill"></div>
                                 </div>
-                                <p style="color: var(--text-muted); font-size: 14px;">Độ chính xác: <strong id="quiz-res-pct" style="color: var(--color-primary);">0%</strong></p>
-                            </div>
 
-                            <div class="quiz-result-breakdown">
-                                <div class="quiz-result-metric">
-                                    <span>Số câu đúng</span>
-                                    <strong id="quiz-res-correct" style="color: var(--color-success);">0</strong>
+                                <!-- Question Metadata -->
+                                <div class="quiz-question-meta">
+                                    <span id="quiz-question-code" class="quiz-badge-id">P01</span>
+                                    <span class="separator">•</span>
+                                    <span id="quiz-question-level">Cấp độ 1</span>
+                                    <span class="separator">•</span>
+                                    <span id="quiz-question-cat">Nghiệp vụ thanh toán</span>
                                 </div>
-                                <div class="quiz-result-metric">
-                                    <span>Số câu sai</span>
-                                    <strong id="quiz-res-wrong" style="color: var(--color-danger);">0</strong>
-                                </div>
-                                <div class="quiz-result-metric">
-                                    <span>Câu sai cần ôn</span>
-                                    <strong id="quiz-res-remaining-wrong" style="color: #f59e0b;">0</strong>
-                                </div>
-                            </div>
 
-                            <div class="quiz-result-actions">
-                                <button type="button" class="btn btn-secondary" id="quiz-res-btn-back">
-                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-                                    Về danh sách đề
-                                </button>
-                                <button type="button" class="btn btn-primary" id="quiz-res-btn-retake">
-                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                                    Làm lại đề này
-                                </button>
-                                <button type="button" class="btn btn-danger" id="quiz-res-btn-wrong" style="display: none;">
-                                    Ôn lại câu sai ngay
-                                </button>
+                                <!-- Question Content -->
+                                <div id="quiz-question-text" class="quiz-question-text">
+                                    Đang tải nội dung câu hỏi...
+                                </div>
+
+                                <!-- Answer Options List -->
+                                <div id="quiz-answers-box" class="quiz-answers-list">
+                                    <!-- Dynamic answers populated by quiz.js -->
+                                </div>
+
+                                <!-- Feedback Banner -->
+                                <div id="quiz-feedback" class="quiz-feedback-box quiz-hidden"></div>
+
+                                <!-- Player Bottom Actions -->
+                                <div class="quiz-player-bottom">
+                                    <button type="button" class="btn btn-secondary" onclick="QuizApp.confirmExit()">
+                                        Thoát bài thi
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="quiz-btn-next" onclick="QuizApp.nextQuestion()" disabled>
+                                        Câu tiếp theo
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </button>
+                                    <div class="quiz-shortcuts-hint">
+                                        Phím tắt: <kbd>1</kbd>–<kbd>4</kbd> hoặc <kbd>A</kbd>–<kbd>D</kbd> chọn, <kbd>Enter</kbd> tiếp
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+
+                        <!-- 3. RESULT VIEW -->
+                        <div id="quiz-result-view" class="quiz-section quiz-hidden">
+                            <div class="quiz-result-card">
+                                <div class="quiz-result-icon-wrapper">
+                                    <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                                </div>
+
+                                <div class="quiz-result-score-display">
+                                    <h3 id="quiz-res-title">Hoàn thành bài thi!</h3>
+                                    <div class="quiz-result-score-number">
+                                        <span id="quiz-res-score">0</span><span> / </span><span id="quiz-res-total">50</span>
+                                    </div>
+                                    <p style="color: var(--text-muted); font-size: 14px;">Độ chính xác: <strong id="quiz-res-pct" style="color: var(--color-primary);">0%</strong></p>
+                                </div>
+
+                                <div class="quiz-result-breakdown">
+                                    <div class="quiz-result-metric">
+                                        <span>Số câu đúng</span>
+                                        <strong id="quiz-res-correct" style="color: var(--color-success);">0</strong>
+                                    </div>
+                                    <div class="quiz-result-metric">
+                                        <span>Số câu sai</span>
+                                        <strong id="quiz-res-wrong" style="color: var(--color-danger);">0</strong>
+                                    </div>
+                                    <div class="quiz-result-metric">
+                                        <span>Câu sai chờ ôn</span>
+                                        <strong id="quiz-res-remaining-wrong" style="color: #f87171;">0</strong>
+                                    </div>
+                                    <div class="quiz-result-metric">
+                                        <span>Đã từng sai</span>
+                                        <strong id="quiz-res-remaining-ever" style="color: #fbbf24;">0</strong>
+                                    </div>
+                                </div>
+
+                                <div class="quiz-result-actions">
+                                    <button type="button" class="btn btn-secondary" id="quiz-res-btn-back">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                                        Về danh sách đề
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="quiz-res-btn-retake">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                                        Làm lại đề này
+                                    </button>
+                                    <button type="button" class="btn btn-danger" id="quiz-res-btn-wrong" style="display: none;">
+                                        Ôn lại câu sai ngay
+                                    </button>
+                                </div>
+
+                                <!-- Detailed Review of Wrong Questions -->
+                                <div id="quiz-review" class="quiz-review"></div>
+                            </div>
+                        </div>
+                    </div> <!-- /#quiz-authenticated-content -->
 
                 </div>
             </div>
@@ -1518,9 +1605,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <!-- Core Business Logic Script -->
-    <script src="app.js?v=1.0.3"></script>
+    <script src="app.js?v=1.0.5"></script>
     <script src="sales.js?v=1.0.3"></script>
-    <script src="quiz-data.js?v=1.0.3"></script>
-    <script src="quiz.js?v=1.0.3"></script>
+    <script src="quiz-data.js?v=1.0.5"></script>
+    <script src="quiz.js?v=1.0.5"></script>
 </body>
 </html>

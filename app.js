@@ -18,6 +18,17 @@ function switchTab(tabId) {
     // Activate current selection
     targetItem.classList.add('active');
     targetPanel.classList.add('active');
+
+    if (tabId === 'quiz-tab') {
+        if (window.QuizApp && window.QuizApp.init) {
+            window.QuizApp.init();
+        }
+        const userInp = document.getElementById('quiz-auth-user');
+        if (userInp && userInp.offsetParent !== null) {
+            setTimeout(() => userInp.focus(), 60);
+        }
+    }
+
     return true;
 }
 
