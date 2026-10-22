@@ -69,14 +69,6 @@
         <mxCell id="8FiRuttMof6dZ8zvrTpV-8" edge="1" parent="VTUELUDnudPP6SSYy9H8-1" source="VTUELUDnudPP6SSYy9H8-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontStyle=1;fontSize=15;startArrow=oval;startFill=1;" target="VTUELUDnudPP6SSYy9H8-31">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="YDrQ4P2tfqJqEP3p37ne-0" edge="1" parent="VTUELUDnudPP6SSYy9H8-1" source="VTUELUDnudPP6SSYy9H8-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;startArrow=oval;startFill=1;" target="mThz7JqnF9Cfezb13W01-0" value="https://dpp.napas.com.vn">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="-580" y="-120" />
-              <mxPoint x="-780" y="-120" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
         <mxCell id="VTUELUDnudPP6SSYy9H8-20" parent="VTUELUDnudPP6SSYy9H8-1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=15;" value="DC&lt;br&gt;DPP CORE" vertex="1">
           <mxGeometry height="80" width="120" x="-640" y="40" as="geometry" />
         </mxCell>
@@ -160,14 +152,6 @@
         </mxCell>
         <mxCell id="8FiRuttMof6dZ8zvrTpV-15" edge="1" parent="VTUELUDnudPP6SSYy9H8-1" source="VTUELUDnudPP6SSYy9H8-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontStyle=1;fontSize=15;" target="VTUELUDnudPP6SSYy9H8-50">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="YDrQ4P2tfqJqEP3p37ne-1" edge="1" parent="VTUELUDnudPP6SSYy9H8-1" source="VTUELUDnudPP6SSYy9H8-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=oval;startFill=1;" target="mThz7JqnF9Cfezb13W01-6" value="">
-          <mxGeometry relative="1" x="0.483" as="geometry">
-            <Array as="points">
-              <mxPoint x="-580" y="920" />
-              <mxPoint x="-780" y="920" />
-            </Array>
-          </mxGeometry>
         </mxCell>
         <mxCell id="VTUELUDnudPP6SSYy9H8-43" parent="VTUELUDnudPP6SSYy9H8-1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=15;" value="DR&lt;br&gt;DPP CORE" vertex="1">
           <mxGeometry height="80" width="120" x="-640" y="680" as="geometry" />
@@ -329,6 +313,22 @@
         <mxCell id="VTUELUDnudPP6SSYy9H8-10" parent="VTUELUDnudPP6SSYy9H8-1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=15;" value="DR&lt;br&gt;API DMZ" vertex="1">
           <mxGeometry height="80" width="120" x="-1160" y="680" as="geometry" />
         </mxCell>
+        <mxCell id="YDrQ4P2tfqJqEP3p37ne-0" edge="1" parent="VTUELUDnudPP6SSYy9H8-1" source="VTUELUDnudPP6SSYy9H8-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;startArrow=oval;startFill=1;" target="mThz7JqnF9Cfezb13W01-0" value="https://dpp.napas.com.vn">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-580" y="-120" />
+              <mxPoint x="-780" y="-120" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="YDrQ4P2tfqJqEP3p37ne-1" edge="1" parent="VTUELUDnudPP6SSYy9H8-1" source="VTUELUDnudPP6SSYy9H8-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=oval;startFill=1;" target="mThz7JqnF9Cfezb13W01-6" value="">
+          <mxGeometry relative="1" x="0.483" as="geometry">
+            <Array as="points">
+              <mxPoint x="-580" y="920" />
+              <mxPoint x="-780" y="920" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
         <mxCell id="YDrQ4P2tfqJqEP3p37ne-3" parent="VTUELUDnudPP6SSYy9H8-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span&gt;https://dpp.napas.com.vn&lt;/span&gt;" vertex="1">
           <mxGeometry height="40" width="150" x="-760" y="920" as="geometry" />
         </mxCell>
@@ -369,7 +369,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="MASTER-PORTAL" id="VPxFrUk7RKoknHHuyp55">
-    <mxGraphModel dx="3166" dy="963" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="xCKsKxecnWdWg6aHeqpf-0" />
         <mxCell id="xCKsKxecnWdWg6aHeqpf-1" parent="xCKsKxecnWdWg6aHeqpf-0" />
